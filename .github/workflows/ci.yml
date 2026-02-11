@@ -1,0 +1,110 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop, "release/**"]
+  pull_request:
+    branches: [main, develop, "release/**"]
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: false
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - regression
+          - all
+      environment:
+        description: "Target environment"
+        required: false
+        default: ci
+        type: choice
+        options:
+          - ci
+          - staging
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (${{ github.event.inputs.suite || 'smoke' }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+
+      - name: Checkout sc-kpi-web
+        uses: actions/checkout@v4
+        with:
+          repository: sc-kpi/sc-kpi-web
+          ref: develop
+          path: sc-kpi-web
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            sc-kpi-web/pnpm-lock.yaml
+
+      - name: Install and build sc-kpi-web
+        working-directory: sc-kpi-web
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Start sc-kpi-web
+        working-directory: sc-kpi-web
+        run: pnpm start &
+
+      - name: Wait for sc-kpi-web
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Install test dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: pnpm test:${{ github.event.inputs.suite || 'smoke' }}
+        env:
+          TEST_ENV: ${{ github.event.inputs.environment || 'ci' }}
+          CI: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+      - name: Upload Allure results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results
+          path: allure-results
+          retention-days: 7
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: test-results
+          retention-days: 7
