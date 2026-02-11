@@ -1,0 +1,16 @@
+baseUrl: https://staging.sc-kpi.ua
+apiBaseUrl: https://staging-api.sc-kpi.ua
+timeout: 45000
+execution:
+  workers: 3
+auth:
+  enabled: true
+  tierCredentials:
+    basic:
+      email: basic@sc-kpi.ua
+      password: ${BASIC_PASSWORD}
+    admin:
+      email: admin@sc-kpi.ua
+      password: ${ADMIN_PASSWORD}
+retry:
+  maxAttempts: 2

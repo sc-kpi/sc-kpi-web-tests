@@ -1,0 +1,15 @@
+baseUrl: http://localhost:3000
+apiBaseUrl: http://localhost:8080
+timeout: 30000
+execution:
+  parallel: true
+  workers: 1
+auth:
+  enabled: false
+  loginEndpoint: /api/v1/auth/login
+  tierCredentials: {}
+retry:
+  maxAttempts: 0
+browser:
+  locale: uk
+  headless: true

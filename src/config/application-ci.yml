@@ -1,0 +1,5 @@
+timeout: 45000
+execution:
+  workers: 1
+retry:
+  maxAttempts: 1
