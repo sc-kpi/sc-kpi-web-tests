@@ -8,7 +8,7 @@
 /allure-report
 
 # auth storage state (runtime-generated)
-playwright/.auth/*.json
+playwright/.auth/
 
 # misc
 .DS_Store
