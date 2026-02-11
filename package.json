@@ -1,0 +1,32 @@
+{
+  "name": "sc-kpi-web-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test --grep @smoke",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:regression": "playwright test --grep \"@smoke|@regression\"",
+    "test:all": "playwright test",
+    "test:framework": "playwright test --grep @framework",
+    "report": "playwright show-report",
+    "report:allure:generate": "allure generate allure-results -o allure-report --clean",
+    "report:allure:serve": "allure serve allure-results",
+    "check": "biome ci .",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.7.0",
+    "@playwright/test": "^1.58.2",
+    "allure-playwright": "^3.2.0",
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.14",
+    "@types/node": "^22",
+    "typescript": "^5.9.0"
+  }
+}
