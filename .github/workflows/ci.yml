@@ -24,10 +24,20 @@ on:
         options:
           - ci
           - staging
+      web_branch:
+        description: "sc-kpi-web branch (empty = auto-detect)"
+        required: false
+        default: ""
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
 
 jobs:
   e2e-tests:
@@ -39,11 +49,41 @@ jobs:
       - name: Checkout test repo
         uses: actions/checkout@v4
 
+      - name: Resolve sc-kpi-web branch
+        id: resolve-web-ref
+        run: |
+          MANUAL_REF="${{ github.event.inputs.web_branch }}"
+          if [[ -n "$MANUAL_REF" ]]; then
+            echo "ref=$MANUAL_REF" >> "$GITHUB_OUTPUT"
+            echo "Using manually specified branch: $MANUAL_REF"
+            exit 0
+          fi
+
+          CANDIDATE="${{ github.head_ref || github.ref_name }}"
+          FALLBACK="develop"
+
+          if [[ "$CANDIDATE" == "$FALLBACK" ]]; then
+            echo "ref=$FALLBACK" >> "$GITHUB_OUTPUT"
+            echo "Current branch is $FALLBACK, using it directly"
+            exit 0
+          fi
+
+          echo "Checking if branch '$CANDIDATE' exists in sc-kpi/sc-kpi-web..."
+          if git ls-remote --exit-code --heads \
+            "https://github.com/sc-kpi/sc-kpi-web.git" \
+            "refs/heads/$CANDIDATE" > /dev/null 2>&1; then
+            echo "ref=$CANDIDATE" >> "$GITHUB_OUTPUT"
+            echo "Matching branch '$CANDIDATE' found in sc-kpi-web"
+          else
+            echo "ref=$FALLBACK" >> "$GITHUB_OUTPUT"
+            echo "Branch '$CANDIDATE' not found, falling back to '$FALLBACK'"
+          fi
+
       - name: Checkout sc-kpi-web
         uses: actions/checkout@v4
         with:
           repository: sc-kpi/sc-kpi-web
-          ref: develop
+          ref: ${{ steps.resolve-web-ref.outputs.ref }}
           path: sc-kpi-web
 
       - name: Setup pnpm
@@ -108,3 +148,11 @@ jobs:
           name: test-results
           path: test-results
           retention-days: 7
+
+      - name: Publish E2E Test results
+        if: always() && github.event_name == 'pull_request'
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: test-results/junit.xml
+          check_name: E2E Test Results
+          comment_title: E2E Tests

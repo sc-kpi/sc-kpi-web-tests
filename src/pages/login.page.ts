@@ -15,9 +15,9 @@ export class LoginPage extends BasePage {
     super(page);
     this.emailInput = page.getByLabel(/email|пошта/i);
     this.passwordInput = page.getByLabel(/password|пароль/i);
-    this.submitButton = page.getByRole("button", { name: /sign in|увійти/i });
+    this.submitButton = page.getByRole("button", { name: /log in|увійти/i });
     this.errorMessage = page.getByRole("alert");
-    this.registerLink = page.getByRole("link", { name: /register|реєстрація/i });
+    this.registerLink = page.getByRole("link", { name: /sign up|реєстрація/i });
   }
 
   async goto(): Promise<void> {
