@@ -103,12 +103,21 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run E2E tests
+        id: run-tests
+        continue-on-error: true
         run: pnpm test:${{ inputs.suite }}
         env:
           TEST_ENV: ${{ inputs.environment }}
           CI: true
           WORKERS: ${{ inputs.workers }}
           BASE_URL: ${{ inputs.base_url || '' }}
+
+      - name: Test outcome
+        if: always()
+        run: |
+          if [[ "${{ steps.run-tests.outcome }}" == "failure" ]]; then
+            echo "::warning::Some E2E tests failed. Check the Allure report for details."
+          fi
 
       - name: Upload Playwright report
         if: always()

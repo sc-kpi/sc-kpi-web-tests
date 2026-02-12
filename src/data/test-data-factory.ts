@@ -10,8 +10,8 @@ export class TestDataFactory {
 
   static invalidLoginData() {
     return {
-      email: "invalid-email",
-      password: "short",
+      email: faker.internet.email(),
+      password: faker.internet.password({ length: 12 }),
     };
   }
 
