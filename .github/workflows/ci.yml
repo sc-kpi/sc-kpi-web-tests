@@ -29,6 +29,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  pull-requests: write
+
 jobs:
   e2e-tests:
     name: E2E Tests (${{ github.event.inputs.suite || 'smoke' }})
@@ -108,3 +112,11 @@ jobs:
           name: test-results
           path: test-results
           retention-days: 7
+
+      - name: Publish E2E Test results
+        if: always() && github.event_name == 'pull_request'
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: test-results/junit.xml
+          check_name: E2E Test Results
+          comment_title: E2E Tests

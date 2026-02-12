@@ -18,10 +18,10 @@ export class TestDataFactory {
   static validRegisterData() {
     const password = faker.internet.password({ length: 12 });
     return {
-      name: faker.person.fullName(),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
       email: faker.internet.email(),
       password,
-      confirmPassword: password,
     };
   }
 

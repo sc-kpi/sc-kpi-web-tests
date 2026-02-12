@@ -5,23 +5,23 @@ import { BasePage } from "./base.page.js";
 export class RegisterPage extends BasePage {
   readonly path = Route.REGISTER;
 
-  readonly nameInput: Locator;
+  readonly firstNameInput: Locator;
+  readonly lastNameInput: Locator;
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
-  readonly confirmPasswordInput: Locator;
   readonly submitButton: Locator;
   readonly errorMessage: Locator;
   readonly loginLink: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.nameInput = page.getByLabel(/name|ім'я/i);
+    this.firstNameInput = page.getByLabel(/first name|ім'я/i);
+    this.lastNameInput = page.getByLabel(/last name|прізвище/i);
     this.emailInput = page.getByLabel(/email|пошта/i);
-    this.passwordInput = page.getByLabel(/^password$|^пароль$/i);
-    this.confirmPasswordInput = page.getByLabel(/confirm|підтвердження/i);
-    this.submitButton = page.getByRole("button", { name: /register|зареєструватися/i });
+    this.passwordInput = page.getByLabel(/password|пароль/i);
+    this.submitButton = page.getByRole("button", { name: /sign up|реєстрація/i });
     this.errorMessage = page.getByRole("alert");
-    this.loginLink = page.getByRole("link", { name: /login|увійти/i });
+    this.loginLink = page.getByRole("link", { name: /log in|увійти/i });
   }
 
   async goto(): Promise<void> {
@@ -29,11 +29,16 @@ export class RegisterPage extends BasePage {
     await this.waitForPageLoad();
   }
 
-  async register(name: string, email: string, password: string): Promise<void> {
-    await this.nameInput.fill(name);
+  async register(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string,
+  ): Promise<void> {
+    await this.firstNameInput.fill(firstName);
+    await this.lastNameInput.fill(lastName);
     await this.emailInput.fill(email);
     await this.passwordInput.fill(password);
-    await this.confirmPasswordInput.fill(password);
     await this.submitButton.click();
   }
 }
