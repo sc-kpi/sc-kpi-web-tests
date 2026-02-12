@@ -1,3 +1,4 @@
+import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
 import { TestDataFactory } from "../../src/data/test-data-factory.js";
 import { expect, test } from "../../src/fixtures/index.js";
@@ -14,6 +15,7 @@ test.describe("Register page", { tag: [Tag.REGRESSION] }, () => {
   });
 
   test("should register with valid data", async ({ registerPage, page }) => {
+    test.skip(!Config.apiBaseUrl(), "Requires backend API");
     const data = TestDataFactory.validRegisterData();
     await registerPage.goto();
     await registerPage.register(data.firstName, data.lastName, data.email, data.password);
@@ -21,6 +23,7 @@ test.describe("Register page", { tag: [Tag.REGRESSION] }, () => {
   });
 
   test("should show error for duplicate email", async ({ registerPage }) => {
+    test.skip(!Config.apiBaseUrl(), "Requires backend API");
     const data = TestDataFactory.validRegisterData();
 
     // Register first time via API

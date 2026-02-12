@@ -13,6 +13,7 @@ test.describe("Login page", { tag: [Tag.REGRESSION] }, () => {
   });
 
   test("should login with valid credentials", async ({ loginPage, page }) => {
+    test.skip(!Config.apiBaseUrl(), "Requires backend API");
     // Register a user via API, then clear cookies to avoid auth state leaking
     const regData = TestDataFactory.validRegisterData();
     await page.request.post(`${Config.apiBaseUrl()}/api/v1/auth/register`, {
