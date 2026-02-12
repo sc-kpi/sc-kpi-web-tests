@@ -16,7 +16,7 @@ export class LoginPage extends BasePage {
     this.emailInput = page.getByLabel(/email|пошта/i);
     this.passwordInput = page.getByLabel(/password|пароль/i);
     this.submitButton = page.getByRole("button", { name: /log in|увійти/i });
-    this.errorMessage = page.getByRole("alert");
+    this.errorMessage = page.locator('[role="alert"]:not(#__next-route-announcer__)');
     this.registerLink = page.getByRole("link", { name: /sign up|реєстрація/i });
   }
 
