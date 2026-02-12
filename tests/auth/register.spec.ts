@@ -27,7 +27,7 @@ test.describe("Register page", { tag: [Tag.REGRESSION] }, () => {
     const data = TestDataFactory.validRegisterData();
 
     // Register first time via API
-    await registerPage.page.request.post("/api/v1/auth/register", {
+    await registerPage.page.request.post(`${Config.apiBaseUrl()}/api/v1/auth/register`, {
       data: {
         email: data.email,
         password: data.password,
