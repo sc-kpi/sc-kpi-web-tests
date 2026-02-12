@@ -1,0 +1,182 @@
+name: Regression Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: "Test suite to run"
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - regression
+          - all
+      web_branch:
+        description: "sc-kpi-web branch to checkout & build"
+        required: false
+        default: develop
+        type: string
+      environment:
+        description: "Config profile"
+        required: true
+        default: ci
+        type: choice
+        options:
+          - ci
+          - staging
+      base_url:
+        description: "Override base URL (skips web build if set)"
+        required: false
+        default: ""
+        type: string
+      workers:
+        description: "Playwright workers"
+        required: true
+        default: "1"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "4"
+
+concurrency:
+  group: regression-${{ github.run_id }}
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  e2e-tests:
+    name: E2E Regression (${{ inputs.suite }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+
+      - name: Checkout sc-kpi-web
+        if: inputs.base_url == ''
+        uses: actions/checkout@v4
+        with:
+          repository: sc-kpi/sc-kpi-web
+          ref: ${{ inputs.web_branch }}
+          path: sc-kpi-web
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            ${{ inputs.base_url == '' && 'sc-kpi-web/pnpm-lock.yaml' || 'pnpm-lock.yaml' }}
+
+      - name: Install and build sc-kpi-web
+        if: inputs.base_url == ''
+        working-directory: sc-kpi-web
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - name: Start sc-kpi-web
+        if: inputs.base_url == ''
+        working-directory: sc-kpi-web
+        run: pnpm start &
+
+      - name: Wait for sc-kpi-web
+        if: inputs.base_url == ''
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Install test dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run E2E tests
+        run: pnpm test:${{ inputs.suite }}
+        env:
+          TEST_ENV: ${{ inputs.environment }}
+          CI: true
+          WORKERS: ${{ inputs.workers }}
+          BASE_URL: ${{ inputs.base_url || '' }}
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: allure-results/
+          retention-days: 14
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 14
+
+      - name: Checkout gh-pages for Allure history
+        if: always()
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+        continue-on-error: true
+
+      - name: Generate Allure report
+        if: always()
+        uses: simple-elf/allure-report-action@v1.13
+        with:
+          allure_results: allure-results
+          allure_report: allure-report
+          gh_pages: gh-pages
+          allure_history: allure-history
+          keep_reports: 50
+
+      - name: Fix Allure report permissions
+        if: always()
+        run: sudo rm -rf allure-history/.git
+
+      - name: Deploy Allure report to GitHub Pages
+        if: always()
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
+
+      - name: Add Job Summary
+        if: always()
+        run: |
+          REPORT_URL="https://sc-kpi.github.io/sc-kpi-web-tests/${{ github.run_number }}/"
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Regression Test Results
+
+          | Parameter | Value |
+          |-----------|-------|
+          | **Suite** | \`${{ inputs.suite }}\` |
+          | **Environment** | \`${{ inputs.environment }}\` |
+          | **Web Branch** | \`${{ inputs.web_branch }}\` |
+          | **Base URL** | \`${{ inputs.base_url || 'http://localhost:3000 (local build)' }}\` |
+          | **Workers** | \`${{ inputs.workers }}\` |
+          | **Allure Report** | ${REPORT_URL} |
+          EOF
