@@ -14,12 +14,12 @@ test.describe("Register page", { tag: [Tag.REGRESSION] }, () => {
     await expect(registerPage.loginLink).toBeVisible();
   });
 
-  test("should register with valid data", async ({ registerPage, page }) => {
+  test("should register with valid data", async ({ registerPage }) => {
     test.skip(!Config.apiBaseUrl(), "Requires backend API");
     const data = TestDataFactory.validRegisterData();
     await registerPage.goto();
     await registerPage.register(data.firstName, data.lastName, data.email, data.password);
-    await expect(page).toHaveURL("/");
+    await expect(registerPage.page).toHaveURL("/");
   });
 
   test("should show error for duplicate email", async ({ registerPage, request }) => {

@@ -4,6 +4,7 @@ import { expect, test } from "../../src/fixtures/index.js";
 
 test.describe("Auth redirects", { tag: [Tag.REGRESSION, Tag.SECURITY] }, () => {
   test("should redirect unauthenticated user from protected route to login", async ({ page }) => {
+    await page.context().clearCookies();
     await page.goto(Route.PROFILE);
     await expect(page).toHaveURL(new RegExp(Route.LOGIN));
   });
@@ -14,11 +15,13 @@ test.describe("Auth redirects", { tag: [Tag.REGRESSION, Tag.SECURITY] }, () => {
   });
 
   test("should allow access to login page", async ({ page }) => {
+    await page.context().clearCookies();
     await page.goto(Route.LOGIN);
     await expect(page).toHaveURL(new RegExp(Route.LOGIN));
   });
 
   test("should allow access to register page", async ({ page }) => {
+    await page.context().clearCookies();
     await page.goto(Route.REGISTER);
     await expect(page).toHaveURL(new RegExp(Route.REGISTER));
   });

@@ -12,11 +12,11 @@ test.describe("Login page", { tag: [Tag.REGRESSION] }, () => {
     await expect(loginPage.registerLink).toBeVisible();
   });
 
-  test("should login with valid credentials", async ({ loginPage, page }) => {
+  test("should login with valid credentials", async ({ loginPage, request }) => {
     test.skip(!Config.apiBaseUrl(), "Requires backend API");
-    // Register a user via API, then clear cookies to avoid auth state leaking
+    // Register a user via API using standalone request context
     const regData = TestDataFactory.validRegisterData();
-    await page.request.post(`${Config.apiBaseUrl()}/api/v1/auth/register`, {
+    await request.post(`${Config.apiBaseUrl()}/api/v1/auth/register`, {
       data: {
         email: regData.email,
         password: regData.password,
@@ -24,11 +24,10 @@ test.describe("Login page", { tag: [Tag.REGRESSION] }, () => {
         lastName: regData.lastName,
       },
     });
-    await page.context().clearCookies();
 
     await loginPage.goto();
     await loginPage.login(regData.email, regData.password);
-    await expect(page).toHaveURL("/");
+    await expect(loginPage.page).toHaveURL("/");
   });
 
   test("should show error with invalid credentials", async ({ loginPage }) => {

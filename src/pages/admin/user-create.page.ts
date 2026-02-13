@@ -14,7 +14,7 @@ export class UserCreatePage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByLabel(/email/i);
+    this.emailInput = page.getByLabel(/email|пошта/i);
     this.passwordInput = page.getByLabel(/password|пароль/i);
     this.firstNameInput = page.getByLabel(/first name|ім'я/i);
     this.lastNameInput = page.getByLabel(/last name|прізвище/i);

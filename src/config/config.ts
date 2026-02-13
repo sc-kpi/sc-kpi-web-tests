@@ -33,4 +33,8 @@ export class Config {
   static browser(): BrowserConfig {
     return ConfigurationManager.getInstance().getConfig().browser;
   }
+
+  static mailpitBaseUrl(): string {
+    return ConfigurationManager.getInstance().getConfig().mailpitBaseUrl;
+  }
 }

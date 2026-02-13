@@ -1,17 +1,27 @@
 import { type BrowserContext, test as base, type Page } from "@playwright/test";
 import { ADMIN_STORAGE_STATE, BASIC_STORAGE_STATE } from "../auth/storage-state.js";
+import { Config } from "../config/config.js";
 import { UserCreatePage } from "../pages/admin/user-create.page.js";
 import { UserDetailPage } from "../pages/admin/user-detail.page.js";
 import { UsersListPage } from "../pages/admin/users-list.page.js";
+import { ForgotPasswordPage } from "../pages/forgot-password.page.js";
 import { HomePage } from "../pages/home.page.js";
 import { LoginPage } from "../pages/login.page.js";
 import { NavigationComponent } from "../pages/navigation.component.js";
 import { RegisterPage } from "../pages/register.page.js";
+import { ResetPasswordPage } from "../pages/reset-password.page.js";
+
+interface GuestFixtures {
+  guestContext: BrowserContext;
+  guestPage: Page;
+}
 
 interface PageFixtures {
   homePage: HomePage;
   loginPage: LoginPage;
   registerPage: RegisterPage;
+  forgotPasswordPage: ForgotPasswordPage;
+  resetPasswordPage: ResetPasswordPage;
   navigation: NavigationComponent;
 }
 
@@ -28,17 +38,44 @@ interface AuthFixtures {
   adminContext: BrowserContext;
 }
 
-export const test = base.extend<PageFixtures & AdminPageFixtures & AuthFixtures>({
+export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures & AuthFixtures>({
+  guestContext: async ({ browser }, use) => {
+    const context = await browser.newContext({
+      baseURL: Config.baseUrl(),
+      locale: Config.browser().locale,
+      timezoneId: "Europe/Kyiv",
+    });
+    await use(context);
+    await context.close();
+  },
+
+  guestPage: async ({ guestContext }, use) => {
+    const page = await guestContext.newPage();
+    await use(page);
+  },
+
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
   },
 
   loginPage: async ({ page }, use) => {
+    await page.context().clearCookies();
     await use(new LoginPage(page));
   },
 
   registerPage: async ({ page }, use) => {
+    await page.context().clearCookies();
     await use(new RegisterPage(page));
+  },
+
+  forgotPasswordPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await use(new ForgotPasswordPage(page));
+  },
+
+  resetPasswordPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await use(new ResetPasswordPage(page));
   },
 
   navigation: async ({ page }, use) => {

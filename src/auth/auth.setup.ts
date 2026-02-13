@@ -16,7 +16,7 @@ setup("authenticate as basic user", async ({ page }) => {
   await page.goto(Config.baseUrl() + Config.auth().loginEndpoint);
   await page.getByLabel(/email|пошта/i).fill(credentials.email);
   await page.getByLabel(/password|пароль/i).fill(credentials.password);
-  await page.getByRole("button", { name: /sign in|увійти/i }).click();
+  await page.getByRole("button", { name: /log in|sign in|увійти/i }).click();
   await page.waitForURL("**/");
 
   await page.context().storageState({ path: BASIC_STORAGE_STATE });
@@ -36,7 +36,7 @@ setup("authenticate as admin user", async ({ page }) => {
   await page.goto(Config.baseUrl() + Config.auth().loginEndpoint);
   await page.getByLabel(/email|пошта/i).fill(credentials.email);
   await page.getByLabel(/password|пароль/i).fill(credentials.password);
-  await page.getByRole("button", { name: /sign in|увійти/i }).click();
+  await page.getByRole("button", { name: /log in|sign in|увійти/i }).click();
   await page.waitForURL("**/");
 
   await page.context().storageState({ path: ADMIN_STORAGE_STATE });
