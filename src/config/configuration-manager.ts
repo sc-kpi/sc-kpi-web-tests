@@ -71,6 +71,7 @@ function applyEnvOverrides(config: TestConfig): TestConfig {
   if (env.HEADLESS) config.browser.headless = env.HEADLESS === "true";
   if (env.RETRIES) config.retry.maxAttempts = Number(env.RETRIES);
   if (env.LOCALE) config.browser.locale = env.LOCALE;
+  if (env.MAILPIT_BASE_URL) config.mailpitBaseUrl = env.MAILPIT_BASE_URL;
 
   return config;
 }

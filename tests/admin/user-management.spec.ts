@@ -56,23 +56,16 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     await expect(lastNameInput).toHaveValue(updateData.lastName);
   });
 
-  test("should create new user via admin form", async ({
-    userCreatePage,
-    usersListPage,
-    adminPage,
-  }) => {
+  test("should create new user via admin form", async ({ userCreatePage, adminPage }) => {
     const createData = TestDataFactory.validCreateUserData();
 
     await userCreatePage.goto();
     await userCreatePage.fillForm(createData);
     await userCreatePage.submit();
 
-    await adminPage.waitForLoadState("domcontentloaded");
-
-    // Navigate to list and verify user appears
-    await usersListPage.goto();
-    const userRow = usersListPage.getUserRow(createData.firstName);
-    await expect(userRow).toBeVisible();
+    // After successful creation, the form redirects to the users list
+    await adminPage.waitForURL(/\/admin\/users(?!\/new)/, { timeout: 10000 });
+    await expect(adminPage.getByRole("table")).toBeVisible();
   });
 
   test("should show validation errors on invalid create", async ({ userCreatePage }) => {

@@ -31,4 +31,5 @@ export interface TestConfig {
   auth: AuthConfig;
   retry: RetryConfig;
   browser: BrowserConfig;
+  mailpitBaseUrl: string;
 }

@@ -154,6 +154,14 @@ jobs:
           ref: ${{ inputs.api_branch }}
           path: sc-kpi-api
 
+      - name: Start MailPit
+        if: inputs.base_url == ''
+        run: docker run -d --name mailpit -p 1025:1025 -p 8025:8025 axllent/mailpit:latest
+
+      - name: Wait for MailPit
+        if: inputs.base_url == ''
+        run: npx wait-on http://localhost:8025 --timeout 30000
+
       - name: Setup Java 25
         uses: actions/setup-java@v4
         with:
@@ -169,6 +177,11 @@ jobs:
 
       - name: Start API
         run: java -jar sc-kpi-api/app/build/libs/sc-kpi-api.jar --spring.profiles.active=dev &
+        env:
+          MAIL_HOST: localhost
+          MAIL_PORT: "1025"
+          GOOGLE_CLIENT_ID: test-client-id
+          GOOGLE_CLIENT_SECRET: test-client-secret
 
       - name: Wait for API
         run: npx wait-on http://localhost:8080/actuator/health --timeout 120000
@@ -457,3 +470,7 @@ jobs:
           | **Workers** | \`${{ inputs.workers }}\` |
           | **Allure Report** | ${REPORT_URL} |
           EOF
+
+      - name: Cleanup MailPit
+        if: always()
+        run: docker rm -f mailpit || true

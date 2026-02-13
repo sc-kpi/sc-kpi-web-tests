@@ -4,3 +4,4 @@ execution:
   workers: 1
 retry:
   maxAttempts: 1
+mailpitBaseUrl: http://localhost:8025

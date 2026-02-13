@@ -5,11 +5,18 @@ execution:
   parallel: true
   workers: 1
 auth:
-  enabled: false
-  loginEndpoint: /api/v1/auth/login
-  tierCredentials: {}
+  enabled: true
+  loginEndpoint: /login
+  tierCredentials:
+    basic:
+      email: basic@test.kpi.ua
+      password: TestBasic123!
+    admin:
+      email: admin@test.kpi.ua
+      password: TestAdmin123!
 retry:
   maxAttempts: 0
 browser:
   locale: uk
   headless: true
+mailpitBaseUrl: http://localhost:8025

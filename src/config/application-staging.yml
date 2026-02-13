@@ -14,3 +14,4 @@ auth:
       password: ${ADMIN_PASSWORD}
 retry:
   maxAttempts: 2
+mailpitBaseUrl: ""
