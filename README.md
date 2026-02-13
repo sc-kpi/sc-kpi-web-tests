@@ -153,7 +153,7 @@ Auth is disabled by default. Enable via `AUTH_ENABLED=true` or in a profile YAML
 
 ## CI
 
-The GitHub Actions workflow (`.github/workflows/ci.yml`) runs on push/PR to main, develop, and release branches. It supports manual dispatch with suite and environment selection.
+The GitHub Actions workflow (`.github/workflows/regression.yml`) supports manual dispatch (`workflow_dispatch`) with suite and environment selection.
 
 ## Code Quality
 
