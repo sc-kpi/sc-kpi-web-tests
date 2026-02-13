@@ -1,0 +1,30 @@
+name: Nightly Regression
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: nightly-regression
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  actions: read
+
+jobs:
+  nightly:
+    uses: ./.github/workflows/regression.yml
+    with:
+      suite: regression
+      web_branch: develop
+      api_branch: develop
+      environment: ci
+      base_url: ""
+      workers: "2"
+      rerun_failed: false
+      previous_run_id: ""
+    secrets: inherit

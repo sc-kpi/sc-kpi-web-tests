@@ -55,6 +55,41 @@ on:
         default: ""
         type: string
 
+  workflow_call:
+    inputs:
+      suite:
+        type: string
+        required: true
+        default: smoke
+      web_branch:
+        type: string
+        required: false
+        default: develop
+      environment:
+        type: string
+        required: true
+        default: ci
+      base_url:
+        type: string
+        required: false
+        default: ""
+      api_branch:
+        type: string
+        required: false
+        default: develop
+      workers:
+        type: string
+        required: true
+        default: "1"
+      rerun_failed:
+        type: boolean
+        required: false
+        default: false
+      previous_run_id:
+        type: string
+        required: false
+        default: ""
+
 concurrency:
   group: regression-${{ github.run_id }}
 
