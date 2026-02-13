@@ -22,12 +22,12 @@ test.describe("Register page", { tag: [Tag.REGRESSION] }, () => {
     await expect(page).toHaveURL("/");
   });
 
-  test("should show error for duplicate email", async ({ registerPage }) => {
+  test("should show error for duplicate email", async ({ registerPage, request }) => {
     test.skip(!Config.apiBaseUrl(), "Requires backend API");
     const data = TestDataFactory.validRegisterData();
 
-    // Register first time via API
-    await registerPage.page.request.post(`${Config.apiBaseUrl()}/api/v1/auth/register`, {
+    // Register first time via standalone API context (not page.request, to avoid cookie leaking)
+    await request.post(`${Config.apiBaseUrl()}/api/v1/auth/register`, {
       data: {
         email: data.email,
         password: data.password,
