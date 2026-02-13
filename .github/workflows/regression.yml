@@ -292,8 +292,10 @@ jobs:
             UNKNOWN=$(jq -r '.statistic.unknown // 0' "$SUMMARY_FILE")
             TOTAL=$(jq -r '.statistic.total // 0' "$SUMMARY_FILE")
             DURATION_MS=$(jq -r '.time.duration // 0 | floor' "$SUMMARY_FILE")
-            MINUTES=$((DURATION_MS / 60000))
-            SECONDS=$(( (DURATION_MS % 60000) / 1000 ))
+            TOTAL_SECS=$((DURATION_MS / 1000))
+            HOURS=$((TOTAL_SECS / 3600))
+            MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
+            SECONDS=$((TOTAL_SECS % 60))
           else
             JUNIT_FILE="test-results/junit.xml"
             if [[ -f "$JUNIT_FILE" ]]; then
@@ -306,8 +308,10 @@ jobs:
               TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; DURATION=0
             fi
             BROKEN=0; UNKNOWN=0
-            MINUTES=$(echo "$DURATION / 60" | bc)
-            SECONDS=$(echo "$DURATION % 60 / 1" | bc)
+            TOTAL_SECS=$(echo "$DURATION / 1" | bc)
+            HOURS=$((TOTAL_SECS / 3600))
+            MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
+            SECONDS=$((TOTAL_SECS % 60))
           fi
 
           SUITE_NAME="${{ inputs.suite }}"
@@ -331,6 +335,26 @@ jobs:
           EMPTY=$((20 - FILLED))
           BAR=$(printf '█%.0s' $(seq 1 $FILLED 2>/dev/null))$(printf '░%.0s' $(seq 1 $EMPTY 2>/dev/null))
 
+          WF_START=$(gh run view ${{ github.run_id }} --json createdAt -q '.createdAt')
+          START_EPOCH=$(date -d "$WF_START" +%s)
+          NOW_EPOCH=$(date +%s)
+          WF_ELAPSED=$((NOW_EPOCH - START_EPOCH))
+          WF_HOURS=$((WF_ELAPSED / 3600))
+          WF_MINUTES=$(( (WF_ELAPSED % 3600) / 60 ))
+          WF_SECONDS=$((WF_ELAPSED % 60))
+
+          if [[ $HOURS -gt 0 ]]; then
+            DURATION_FMT="${HOURS}h ${MINUTES}m ${SECONDS}s"
+          else
+            DURATION_FMT="${MINUTES}m ${SECONDS}s"
+          fi
+
+          if [[ $WF_HOURS -gt 0 ]]; then
+            WF_TIME_FMT="${WF_HOURS}h ${WF_MINUTES}m ${WF_SECONDS}s"
+          else
+            WF_TIME_FMT="${WF_MINUTES}m ${WF_SECONDS}s"
+          fi
+
           SETUP="— suite: ${{ inputs.suite }}"
           SETUP+=$'\n'"— web_branch: ${{ inputs.web_branch }}"
           SETUP+=$'\n'"— api_branch: ${{ inputs.api_branch }}"
@@ -351,7 +375,8 @@ jobs:
 
           <b>Suite:</b> ${SUITE_NAME}
           <b>Environment:</b> ${{ inputs.environment }}
-          <b>Duration:</b> ${MINUTES}m ${SECONDS}s
+          <b>Duration:</b> ${DURATION_FMT}
+          <b>Workflow time:</b> ${WF_TIME_FMT}
           ⸻⸻⸻⸻⸻
           ✅   Passed: <b>${PASSED}</b>
           ⛔️   Failed: <b>${FAILED}</b>
@@ -378,6 +403,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TELEGRAM_TOPIC_ID: ${{ secrets.TELEGRAM_TOPIC_ID }}
+          GH_TOKEN: ${{ github.token }}
 
       - name: Add Job Summary
         if: always()
