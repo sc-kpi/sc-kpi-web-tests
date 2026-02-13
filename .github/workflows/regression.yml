@@ -44,6 +44,16 @@ on:
           - "1"
           - "2"
           - "4"
+      rerun_failed:
+        description: "Rerun only failed tests from a previous run"
+        required: false
+        default: false
+        type: boolean
+      previous_run_id:
+        description: "Run ID to rerun failed tests from (required if rerun_failed=true)"
+        required: false
+        default: ""
+        type: string
 
 concurrency:
   group: regression-${{ github.run_id }}
@@ -52,6 +62,7 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  actions: read
 
 jobs:
   e2e-tests:
@@ -133,8 +144,18 @@ jobs:
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps chromium
 
+      - name: Download previous last-run state
+        if: inputs.rerun_failed == true && inputs.previous_run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          name: last-run-state
+          path: .
+          run-id: ${{ inputs.previous_run_id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run E2E tests
         id: run-tests
+        if: inputs.rerun_failed == false
         continue-on-error: true
         run: pnpm test:${{ inputs.suite }}
         env:
@@ -143,10 +164,62 @@ jobs:
           WORKERS: ${{ inputs.workers }}
           BASE_URL: ${{ inputs.base_url || '' }}
 
+      - name: Auto-retry failed tests
+        id: auto-retry
+        if: inputs.rerun_failed == false && steps.run-tests.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          if [[ -f ".last-run.json" ]]; then
+            echo "Found .last-run.json, rerunning failed tests..."
+            pnpm exec playwright test --last-failed
+          else
+            echo "No .last-run.json found, skipping auto-retry"
+          fi
+        env:
+          TEST_ENV: ${{ inputs.environment }}
+          CI: true
+          WORKERS: ${{ inputs.workers }}
+          BASE_URL: ${{ inputs.base_url || '' }}
+
+      - name: Rerun failed tests (manual)
+        id: manual-rerun
+        if: inputs.rerun_failed == true
+        continue-on-error: true
+        run: |
+          if [[ ! -f ".last-run.json" ]]; then
+            echo "::error::.last-run.json not found. Make sure the previous run ID is correct and had failures."
+            exit 1
+          fi
+          echo "Rerunning failed tests from run ${{ inputs.previous_run_id }}..."
+          pnpm exec playwright test --last-failed
+        env:
+          TEST_ENV: ${{ inputs.environment }}
+          CI: true
+          WORKERS: ${{ inputs.workers }}
+          BASE_URL: ${{ inputs.base_url || '' }}
+
+      - name: Upload last-run state
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-run-state
+          path: .last-run.json
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Test outcome
         if: always()
         run: |
-          if [[ "${{ steps.run-tests.outcome }}" == "failure" ]]; then
+          INITIAL="${{ steps.run-tests.outcome }}"
+          RETRY="${{ steps.auto-retry.outcome }}"
+          MANUAL="${{ steps.manual-rerun.outcome }}"
+          if [[ "$MANUAL" == "failure" ]]; then
+            echo "::warning::Manual rerun of failed E2E tests failed. Check the Allure report for details."
+          elif [[ "$RETRY" == "failure" ]]; then
+            echo "::warning::Auto-retry of failed E2E tests also failed. Check the Allure report for details."
+          elif [[ "$INITIAL" == "failure" && "$RETRY" == "success" ]]; then
+            echo "::notice::Some E2E tests failed initially but passed on auto-retry."
+          elif [[ "$INITIAL" == "failure" ]]; then
             echo "::warning::Some E2E tests failed. Check the Allure report for details."
           fi
 
@@ -203,6 +276,58 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+
+      - name: Telegram notification
+        if: always()
+        run: |
+          ALLURE_URL="https://sc-kpi.github.io/sc-kpi-web-tests/${{ github.run_number }}/"
+          GITHUB_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+
+          JUNIT_FILE="test-results/junit.xml"
+          if [[ -f "$JUNIT_FILE" ]]; then
+            TOTAL=$(grep -oP 'tests="\K[0-9]+' "$JUNIT_FILE" | head -1)
+            FAILED=$(grep -oP 'failures="\K[0-9]+' "$JUNIT_FILE" | head -1)
+            SKIPPED=$(grep -oP 'skipped="\K[0-9]+' "$JUNIT_FILE" | head -1)
+            DURATION=$(grep -oP 'time="\K[0-9.]+' "$JUNIT_FILE" | head -1)
+            PASSED=$((TOTAL - FAILED - SKIPPED))
+          else
+            TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; DURATION=0
+          fi
+          MINUTES=$(echo "$DURATION / 60" | bc)
+          SECONDS=$(echo "$DURATION % 60 / 1" | bc)
+
+          if [[ $FAILED -gt 0 ]]; then
+            STATUS_ICON="🔴"
+            STATUS="FAILED"
+          else
+            STATUS_ICON="🟢"
+            STATUS="PASSED"
+          fi
+
+          MESSAGE="${STATUS_ICON} <b>E2E Regression — ${STATUS}</b>
+
+          📋 <b>Suite:</b> ${{ inputs.suite }}
+          🌍 <b>Environment:</b> ${{ inputs.environment }}
+          🔀 <b>Web Branch:</b> ${{ inputs.web_branch }}
+          🔀 <b>API Branch:</b> ${{ inputs.api_branch }}
+          ⏱ <b>Duration:</b> ${MINUTES}m ${SECONDS}s
+
+          ✅ Passed: <b>${PASSED}</b>
+          ❌ Failed: <b>${FAILED}</b>
+          ⏭ Skipped: <b>${SKIPPED}</b>
+          📊 Total: <b>${TOTAL}</b>
+
+          📎 <a href=\"${ALLURE_URL}\">Allure Report</a>
+          📎 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d parse_mode="HTML" \
+            -d disable_web_page_preview="true" \
+            --data-urlencode "text=${MESSAGE}" || echo "::warning::Telegram notification failed"
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
       - name: Add Job Summary
         if: always()
