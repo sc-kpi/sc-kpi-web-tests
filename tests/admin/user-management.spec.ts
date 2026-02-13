@@ -5,7 +5,7 @@ import { expect, test } from "../../src/fixtures/index.js";
 
 test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
-    test.skip(!Config.apiBaseUrl(), "Requires backend API");
+    test.skip(!Config.isAuthEnabled(), "Admin tests require authentication");
   });
 
   test("should display user list", { tag: [Tag.SMOKE] }, async ({ usersListPage }) => {
