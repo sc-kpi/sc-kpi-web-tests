@@ -25,6 +25,22 @@ export class TestDataFactory {
     };
   }
 
+  static validCreateUserData() {
+    return {
+      email: faker.internet.email(),
+      password: faker.internet.password({ length: 12 }),
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+    };
+  }
+
+  static validUserUpdateData() {
+    return {
+      firstName: faker.person.firstName(),
+      lastName: faker.person.lastName(),
+    };
+  }
+
   static randomEmail(): string {
     return faker.internet.email();
   }

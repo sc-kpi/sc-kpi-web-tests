@@ -1,5 +1,8 @@
 import { type BrowserContext, test as base, type Page } from "@playwright/test";
 import { ADMIN_STORAGE_STATE, BASIC_STORAGE_STATE } from "../auth/storage-state.js";
+import { UserCreatePage } from "../pages/admin/user-create.page.js";
+import { UserDetailPage } from "../pages/admin/user-detail.page.js";
+import { UsersListPage } from "../pages/admin/users-list.page.js";
 import { HomePage } from "../pages/home.page.js";
 import { LoginPage } from "../pages/login.page.js";
 import { NavigationComponent } from "../pages/navigation.component.js";
@@ -12,6 +15,12 @@ interface PageFixtures {
   navigation: NavigationComponent;
 }
 
+interface AdminPageFixtures {
+  usersListPage: UsersListPage;
+  userDetailPage: UserDetailPage;
+  userCreatePage: UserCreatePage;
+}
+
 interface AuthFixtures {
   authenticatedPage: Page;
   authenticatedContext: BrowserContext;
@@ -19,7 +28,7 @@ interface AuthFixtures {
   adminContext: BrowserContext;
 }
 
-export const test = base.extend<PageFixtures & AuthFixtures>({
+export const test = base.extend<PageFixtures & AdminPageFixtures & AuthFixtures>({
   homePage: async ({ page }, use) => {
     await use(new HomePage(page));
   },
@@ -34,6 +43,18 @@ export const test = base.extend<PageFixtures & AuthFixtures>({
 
   navigation: async ({ page }, use) => {
     await use(new NavigationComponent(page));
+  },
+
+  usersListPage: async ({ adminPage }, use) => {
+    await use(new UsersListPage(adminPage));
+  },
+
+  userDetailPage: async ({ adminPage }, use) => {
+    await use(new UserDetailPage(adminPage));
+  },
+
+  userCreatePage: async ({ adminPage }, use) => {
+    await use(new UserCreatePage(adminPage));
   },
 
   authenticatedContext: async ({ browser }, use) => {
