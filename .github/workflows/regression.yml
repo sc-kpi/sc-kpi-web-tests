@@ -38,12 +38,14 @@ on:
       workers:
         description: "Playwright workers"
         required: true
-        default: "1"
+        default: "2"
         type: choice
         options:
           - "1"
           - "2"
           - "4"
+          - "6"
+          - "8"
       rerun_failed:
         description: "Rerun only failed tests from a previous run"
         required: false
@@ -51,6 +53,11 @@ on:
         type: boolean
       previous_run_id:
         description: "Run ID to rerun failed tests from (required if rerun_failed=true)"
+        required: false
+        default: ""
+        type: string
+      caller_event:
+        description: "Internal: event name from calling workflow"
         required: false
         default: ""
         type: string
@@ -80,12 +87,16 @@ on:
       workers:
         type: string
         required: true
-        default: "1"
+        default: "2"
       rerun_failed:
         type: boolean
         required: false
         default: false
       previous_run_id:
+        type: string
+        required: false
+        default: ""
+      caller_event:
         type: string
         required: false
         default: ""
@@ -227,6 +238,16 @@ jobs:
           WORKERS: ${{ inputs.workers }}
           BASE_URL: ${{ inputs.base_url || '' }}
 
+      - name: Capture initial failure count
+        if: always() && steps.run-tests.outcome == 'failure'
+        run: |
+          if [[ -f ".last-run.json" ]]; then
+            INITIAL_FAILED=$(jq '.failedTests | length' .last-run.json 2>/dev/null || echo 0)
+          else
+            INITIAL_FAILED=0
+          fi
+          echo "INITIAL_FAILED=$INITIAL_FAILED" >> "$GITHUB_ENV"
+
       - name: Auto-retry failed tests
         id: auto-retry
         if: inputs.rerun_failed == false && steps.run-tests.outcome == 'failure'
@@ -272,6 +293,15 @@ jobs:
           INITIAL="${{ steps.run-tests.outcome }}"
           RETRY="${{ steps.auto-retry.outcome }}"
           MANUAL="${{ steps.manual-rerun.outcome }}"
+          if [[ "$MANUAL" != "skipped" && -n "$MANUAL" ]]; then
+            echo "RUN_TYPE=manual-rerun" >> "$GITHUB_ENV"
+            echo "RERUN_OUTCOME=$MANUAL" >> "$GITHUB_ENV"
+          elif [[ "$INITIAL" == "failure" && "$RETRY" != "skipped" ]]; then
+            echo "RUN_TYPE=auto-retry" >> "$GITHUB_ENV"
+            echo "RERUN_OUTCOME=$RETRY" >> "$GITHUB_ENV"
+          else
+            echo "RUN_TYPE=initial" >> "$GITHUB_ENV"
+          fi
           if [[ "$MANUAL" == "failure" ]]; then
             echo "::warning::Manual rerun of failed E2E tests failed. Check the Allure report for details."
           elif [[ "$RETRY" == "failure" ]]; then
@@ -430,6 +460,34 @@ jobs:
             SETUP+=$'\n'"— previous_run_id: ${{ inputs.previous_run_id }}"
           fi
 
+          if [[ "$RUN_TYPE" == "auto-retry" ]]; then
+            if [[ "$RERUN_OUTCOME" == "success" ]]; then
+              RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → all recovered ✅"
+            else
+              STILL_FAILED=$((FAILED + BROKEN))
+              RECOVERED=$(( ${INITIAL_FAILED:-0} - STILL_FAILED ))
+              if [[ $RECOVERED -lt 0 ]]; then RECOVERED=0; fi
+              RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → ${RECOVERED} recovered, ${STILL_FAILED} still failing"
+            fi
+          elif [[ "$RUN_TYPE" == "manual-rerun" ]]; then
+            if [[ "$RERUN_OUTCOME" == "success" ]]; then
+              RETRY_LINE="🔄  <b>Manual rerun:</b> passed ✅"
+            else
+              RETRY_LINE="🔄  <b>Manual rerun:</b> failed ❌"
+            fi
+          else
+            RETRY_LINE="🔄  <b>Retry:</b> not needed"
+          fi
+
+          ACTOR="${{ github.triggering_actor }}"
+          CALLER_EVENT="${{ inputs.caller_event }}"
+          EVENT="${{ github.event_name }}"
+          if [[ "$EVENT" == "schedule" || "$CALLER_EVENT" == "schedule" ]]; then
+            LAUNCHED_BY="👤 <b>Launched by:</b> scheduled (nightly)"
+          else
+            LAUNCHED_BY="👤 <b>Launched by:</b> <a href=\"https://github.com/${ACTOR}\">@${ACTOR}</a>"
+          fi
+
           MESSAGE="⸻⸻⸻⸻⸻
           <b>SC KPI WEB ${SUITE_DISPLAY} — ${STATUS} ${STATUS_ICON}</b>
 
@@ -447,12 +505,15 @@ jobs:
           ⁉️   Unknown: <b>${UNKNOWN}</b>
 
           — <b>Total tests executed</b>: ${TOTAL}
+          ${RETRY_LINE}
           ⸻⸻⸻⸻⸻
           <b>Workflow setup:</b>
           ${SETUP}
           ⸻⸻⸻⸻⸻
           📊 <a href=\"${ALLURE_URL}\">Allure Report</a>
           🔗 <a href=\"${GITHUB_RUN_URL}\">GitHub Run</a>
+
+          ${LAUNCHED_BY}
           ⸻⸻⸻⸻⸻"
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
