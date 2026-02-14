@@ -156,12 +156,14 @@ jobs:
 
       - name: Start MailPit
         if: inputs.base_url == ''
-        run: docker run -d --name mailpit -p 1025:1025 -p 8025:8025 axllent/mailpit:latest
+        run: |
+          docker pull axllent/mailpit:v1.21
+          docker run -d --name mailpit -p 1025:1025 -p 8025:8025 axllent/mailpit:v1.21
 
       - name: Wait for MailPit
         if: inputs.base_url == ''
         run: |
-          timeout=60
+          timeout=120
           while [ $timeout -gt 0 ]; do
             if curl -sf http://localhost:8025 > /dev/null 2>&1; then
               echo "MailPit is ready"
@@ -170,7 +172,9 @@ jobs:
             sleep 2
             timeout=$((timeout - 2))
           done
-          echo "MailPit failed to start within 60 seconds"
+          echo "MailPit failed to start within 120 seconds"
+          docker ps -a
+          docker logs mailpit 2>&1 | tail -20
           exit 1
 
       - name: Setup Java 25
@@ -228,12 +232,8 @@ jobs:
         if: inputs.rerun_failed == false && steps.run-tests.outcome == 'failure'
         continue-on-error: true
         run: |
-          if [[ -f ".last-run.json" ]]; then
-            echo "Found .last-run.json, rerunning failed tests..."
-            pnpm exec playwright test --last-failed
-          else
-            echo "No .last-run.json found, skipping auto-retry"
-          fi
+          echo "Initial test run failed, attempting auto-retry..."
+          pnpm exec playwright test --last-failed || echo "Auto-retry completed with failures"
         env:
           TEST_ENV: ${{ inputs.environment }}
           CI: true

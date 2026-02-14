@@ -132,15 +132,11 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
     await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
-    // Click delete (use first() to target the main delete button)
+    // Set up handler for native confirm() dialog BEFORE clicking delete
+    adminPage.on("dialog", (dialog) => dialog.accept());
+
     const deleteButton = adminPage.getByRole("button", { name: /delete|видалити/i }).first();
     await deleteButton.click();
-
-    // Confirm deletion if dialog appears
-    const confirmButton = adminPage.getByRole("button", { name: /confirm|підтвердити|yes|так/i });
-    if (await confirmButton.isVisible({ timeout: 2000 }).catch(() => false)) {
-      await confirmButton.click();
-    }
 
     await adminPage.waitForURL(/\/admin\/users(?!\/)/, { timeout: 15000 });
 
