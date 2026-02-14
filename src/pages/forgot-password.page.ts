@@ -15,7 +15,9 @@ export class ForgotPasswordPage extends BasePage {
     super(page);
     this.emailInput = page.getByLabel(/email|пошта/i);
     this.submitButton = page.getByRole("button", { name: /send|надіслати|reset|відновити/i });
-    this.successAlert = page.locator('[class*="bg-primary/"]');
+    this.successAlert = page.getByText(
+      /reset link has been sent|посилання для скидання надіслано/i,
+    );
     this.errorMessage = page.locator('[role="alert"]:not(#__next-route-announcer__)');
     this.backToLoginLink = page.getByRole("link", {
       name: /log in|увійти|back|назад|повернутися/i,

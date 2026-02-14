@@ -20,7 +20,7 @@ export class ResetPasswordPage extends BasePage {
     this.submitButton = page.getByRole("button", {
       name: /reset|скинути|відновити|save|зберегти/i,
     });
-    this.successMessage = page.locator('[class*="bg-primary/"]');
+    this.successMessage = page.getByText(/password has been reset|пароль.*скинуто/i);
     this.errorMessage = page.locator('[role="alert"]:not(#__next-route-announcer__)');
     this.backToLoginLink = page.getByRole("link", {
       name: /log in|увійти|back|назад|повернутися/i,

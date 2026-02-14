@@ -19,6 +19,7 @@ export class UsersListPage extends BasePage {
   async goto(): Promise<void> {
     await this.navigate();
     await this.waitForPageLoad();
+    await this.table.waitFor({ state: "visible", timeout: 15000 });
   }
 
   getUserRow(name: string): Locator {
@@ -31,6 +32,7 @@ export class UsersListPage extends BasePage {
   }
 
   async getUserCount(): Promise<number> {
+    await this.table.waitFor({ state: "visible", timeout: 15000 });
     // Subtract 1 for the header row
     const count = await this.tableRows.count();
     return Math.max(0, count - 1);
