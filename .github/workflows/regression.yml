@@ -365,7 +365,10 @@ jobs:
           SUITE_NAME="${{ inputs.suite }}"
           SUITE_DISPLAY="${SUITE_NAME^}"
 
-          if [[ $((FAILED + BROKEN)) -gt 0 ]]; then
+          if [[ $TOTAL -eq 0 ]]; then
+            STATUS="BROKEN"
+            STATUS_ICON="🟡"
+          elif [[ $((FAILED + BROKEN)) -gt 0 ]]; then
             STATUS="FAILED"
             STATUS_ICON="🔴"
           else
