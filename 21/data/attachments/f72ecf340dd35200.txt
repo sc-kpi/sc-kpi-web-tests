@@ -1,0 +1,2 @@
+[ROUTE] Intercepted POST http://localhost:8080/api/v1/auth/forgot-password
+[ROUTE] Server responded: 200

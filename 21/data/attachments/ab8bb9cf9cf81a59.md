@@ -1,0 +1,19 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: Забули пароль
+      - generic [ref=e7]: Введіть вашу електронну пошту, і ми надішлемо посилання для скидання
+    - generic [ref=e9]:
+      - alert [ref=e10]: Невірна електронна пошта або пароль
+      - generic [ref=e11]:
+        - generic [ref=e12]: Електронна пошта
+        - textbox "Електронна пошта" [ref=e13]: Bronuuslava93@gmail.com
+      - button "Надіслати посилання" [ref=e14]
+      - paragraph [ref=e15]:
+        - link "Повернутися до входу" [ref=e16] [cursor=pointer]:
+          - /url: /login
+  - alert [ref=e17]
+```
