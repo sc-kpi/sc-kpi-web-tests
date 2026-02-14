@@ -27,18 +27,24 @@ async function routePasswordResetApis(page: Page): Promise<void> {
       console.log(`[BROWSER ERROR] ${msg.text()}`);
     }
   });
-  await page.route("**/api/v1/auth/forgot-password", async (route) => {
-    console.log(`[ROUTE] Intercepted ${route.request().method()} ${route.request().url()}`);
-    const response = await route.fetch();
-    console.log(`[ROUTE] Server responded: ${response.status()}`);
-    await route.fulfill({ response });
-  });
-  await page.route("**/api/v1/auth/reset-password", async (route) => {
-    console.log(`[ROUTE] Intercepted ${route.request().method()} ${route.request().url()}`);
-    const response = await route.fetch();
-    console.log(`[ROUTE] Server responded: ${response.status()}`);
-    await route.fulfill({ response });
-  });
+  for (const endpoint of ["forgot-password", "reset-password"]) {
+    await page.route(`**/api/v1/auth/${endpoint}`, async (route) => {
+      const reqUrl = route.request().url();
+      console.log(`[ROUTE] Intercepted ${route.request().method()} ${reqUrl}`);
+      const response = await route.fetch();
+      const body = await response.body();
+      const bodyPreview = body.toString("utf8").substring(0, 200);
+      console.log(
+        `[ROUTE] Response: status=${response.status()} url=${response.url()} bodyLen=${body.length} body=${bodyPreview}`,
+      );
+      // Fulfill with explicit 204 if server returns empty body (CORS/redirect workaround)
+      if (body.length === 0 || response.status() === 204) {
+        await route.fulfill({ status: 204, body: "" });
+      } else {
+        await route.fulfill({ response });
+      }
+    });
+  }
 }
 
 interface GuestFixtures {
