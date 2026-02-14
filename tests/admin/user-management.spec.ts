@@ -88,8 +88,8 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
     await adminPage.waitForLoadState("domcontentloaded");
 
-    // Change tier
-    const tierSelect = adminPage.getByLabel(/tier|рівень/i);
+    // Change tier (use exact match to avoid matching "Рівень партнера")
+    const tierSelect = adminPage.getByLabel(/^tier$|^рівень$/i);
     await tierSelect.selectOption("3");
 
     // Verify the tier value is selected
@@ -110,7 +110,7 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     const toggleButton = adminPage.getByRole("button", {
       name: /activate|deactivate|активувати|деактивувати/i,
     });
-    const statusBadge = adminPage.locator('[data-testid="status-badge"]');
+    const statusBadge = adminPage.getByText(/^(active|inactive|активний|неактивний)$/i);
 
     const initialStatus = await statusBadge.textContent();
     await toggleButton.click();
@@ -128,8 +128,8 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     await lastUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
     await adminPage.waitForLoadState("domcontentloaded");
 
-    // Click delete
-    const deleteButton = adminPage.getByRole("button", { name: /delete|видалити/i });
+    // Click delete (use first() to target the main delete button)
+    const deleteButton = adminPage.getByRole("button", { name: /delete|видалити/i }).first();
     await deleteButton.click();
 
     // Confirm deletion if dialog appears
