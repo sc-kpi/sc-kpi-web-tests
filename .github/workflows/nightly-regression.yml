@@ -24,7 +24,8 @@ jobs:
       api_branch: develop
       environment: ci
       base_url: ""
-      workers: "2"
+      workers: "4"
       rerun_failed: false
       previous_run_id: ""
+      caller_event: ${{ github.event_name }}
     secrets: inherit
