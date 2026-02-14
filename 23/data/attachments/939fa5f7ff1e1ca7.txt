@@ -1,0 +1,4 @@
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=1l48l - net::ERR_ABORTED
+[ROUTE] Intercepted POST http://localhost:8080/api/v1/auth/forgot-password
+[ROUTE] Response: status=200 url=http://localhost:8080/api/v1/auth/forgot-password bodyLen=0 body=
+[REQUEST FAILED] POST http://localhost:8080/api/v1/auth/forgot-password - net::ERR_ABORTED

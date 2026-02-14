@@ -1,0 +1,2 @@
+[REQUEST FAILED] GET http://localhost:3000/forgot-password?_rsc=bmisv - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/forgot-password?_rsc=1gz4h - net::ERR_ABORTED

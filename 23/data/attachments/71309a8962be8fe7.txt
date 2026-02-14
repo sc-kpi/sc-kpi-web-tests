@@ -1,0 +1,30 @@
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=165i4 - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=165i4 - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=1l48l - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=1l48l - net::ERR_ABORTED
+[ROUTE] Intercepted POST http://localhost:8080/api/v1/auth/forgot-password
+[ROUTE] Response: status=200 url=http://localhost:8080/api/v1/auth/forgot-password bodyLen=0 body=
+[REQUEST FAILED] POST http://localhost:8080/api/v1/auth/forgot-password - net::ERR_ABORTED
+[REQUEST FAILED] POST http://localhost:8080/api/v1/auth/forgot-password - net::ERR_ABORTED
+[ROUTE] Intercepted POST http://localhost:8080/api/v1/auth/reset-password
+[ROUTE] Response: status=200 url=http://localhost:8080/api/v1/auth/reset-password bodyLen=0 body=
+[REQUEST FAILED] POST http://localhost:8080/api/v1/auth/reset-password - net::ERR_ABORTED
+[REQUEST FAILED] POST http://localhost:8080/api/v1/auth/reset-password - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=bmisv - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/login?_rsc=bmisv - net::ERR_ABORTED
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[REQUEST FAILED] GET http://localhost:3000/register?_rsc=q8f33 - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/register?_rsc=q8f33 - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/forgot-password?_rsc=q8f33 - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/forgot-password?_rsc=q8f33 - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/register?_rsc=1dtbh - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/register?_rsc=1dtbh - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/forgot-password?_rsc=1dtbh - net::ERR_ABORTED
+[REQUEST FAILED] GET http://localhost:3000/forgot-password?_rsc=1dtbh - net::ERR_ABORTED
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
+[BROWSER ERROR] Failed to load resource: the server responded with a status of 401 ()
