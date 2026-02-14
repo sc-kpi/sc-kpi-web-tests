@@ -21,7 +21,7 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
 
     const firstUserRow = usersListPage.table.getByRole("row").nth(1);
     await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
-    await adminPage.waitForLoadState("domcontentloaded");
+    await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
 
     // Verify detail page loaded with expected elements
     await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
@@ -38,7 +38,8 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     // Click edit on the first user row
     const firstUserRow = usersListPage.table.getByRole("row").nth(1);
     await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
-    await adminPage.waitForLoadState("domcontentloaded");
+    await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
+    await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
     // Update profile fields
     const firstNameInput = adminPage.getByLabel(/first name|ім'я/i);
@@ -81,12 +82,13 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
   test("should change user tier", async ({ usersListPage, adminPage }) => {
     await usersListPage.goto();
     const userCount = await usersListPage.getUserCount();
-    test.skip(userCount === 0, "No users available to edit");
+    test.skip(userCount < 2, "Need non-admin user to test tier change");
 
-    // Click edit on the first user row
-    const firstUserRow = usersListPage.table.getByRole("row").nth(1);
-    await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
-    await adminPage.waitForLoadState("domcontentloaded");
+    // Click edit on a non-admin user (nth(2)) to avoid demoting the admin
+    const targetUserRow = usersListPage.table.getByRole("row").nth(2);
+    await targetUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
+    await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
     // Change tier (use exact match to avoid matching "Рівень партнера")
     const tierSelect = adminPage.getByLabel(/^tier$|^рівень$/i);
@@ -99,12 +101,13 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
   test("should toggle user status", async ({ usersListPage, adminPage }) => {
     await usersListPage.goto();
     const userCount = await usersListPage.getUserCount();
-    test.skip(userCount === 0, "No users available to edit");
+    test.skip(userCount < 2, "Need non-admin user to test status toggle");
 
-    // Click edit on the first user row
-    const firstUserRow = usersListPage.table.getByRole("row").nth(1);
-    await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
-    await adminPage.waitForLoadState("domcontentloaded");
+    // Click edit on a non-admin user (nth(2)) to avoid toggling admin status
+    const targetUserRow = usersListPage.table.getByRole("row").nth(2);
+    await targetUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
+    await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
     // Toggle status
     const toggleButton = adminPage.getByRole("button", {
@@ -126,7 +129,8 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
 
     const lastUserRow = usersListPage.table.getByRole("row").nth(userCount);
     await lastUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
-    await adminPage.waitForLoadState("domcontentloaded");
+    await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
+    await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
     // Click delete (use first() to target the main delete button)
     const deleteButton = adminPage.getByRole("button", { name: /delete|видалити/i }).first();
@@ -138,10 +142,9 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
       await confirmButton.click();
     }
 
-    await adminPage.waitForLoadState("domcontentloaded");
+    await adminPage.waitForURL(/\/admin\/users(?!\/)/, { timeout: 15000 });
 
-    // Should navigate back to list or show success
-    // The exact assertion depends on UI behavior after deletion
-    await expect(adminPage).toHaveURL(/\/admin\/users/);
+    // Should navigate back to list after deletion
+    await expect(adminPage.getByRole("table")).toBeVisible();
   });
 });
