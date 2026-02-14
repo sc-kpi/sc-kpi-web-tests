@@ -12,32 +12,17 @@ import { RegisterPage } from "../pages/register.page.js";
 import { ResetPasswordPage } from "../pages/reset-password.page.js";
 
 /**
- * Route password-reset API calls through Playwright to bypass browser CORS
- * enforcement on 204 No Content responses. Uses glob pattern to match
- * any origin, ensuring the route intercepts regardless of URL normalization.
+ * Route password-reset API calls through Playwright so that empty-body
+ * responses are normalized to 204. The API returns 200 with an empty body
+ * (instead of the expected 204), which causes the frontend api-client to
+ * attempt JSON.parse on an empty string. Fulfilling with explicit 204
+ * ensures the client handles it correctly.
  */
 async function routePasswordResetApis(page: Page): Promise<void> {
-  page.on("requestfailed", (request) => {
-    console.log(
-      `[REQUEST FAILED] ${request.method()} ${request.url()} - ${request.failure()?.errorText}`,
-    );
-  });
-  page.on("console", (msg) => {
-    if (msg.type() === "error") {
-      console.log(`[BROWSER ERROR] ${msg.text()}`);
-    }
-  });
   for (const endpoint of ["forgot-password", "reset-password"]) {
     await page.route(`**/api/v1/auth/${endpoint}`, async (route) => {
-      const reqUrl = route.request().url();
-      console.log(`[ROUTE] Intercepted ${route.request().method()} ${reqUrl}`);
       const response = await route.fetch();
       const body = await response.body();
-      const bodyPreview = body.toString("utf8").substring(0, 200);
-      console.log(
-        `[ROUTE] Response: status=${response.status()} url=${response.url()} bodyLen=${body.length} body=${bodyPreview}`,
-      );
-      // Fulfill with explicit 204 if server returns empty body (CORS/redirect workaround)
       if (body.length === 0 || response.status() === 204) {
         await route.fulfill({ status: 204, body: "" });
       } else {
