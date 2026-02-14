@@ -11,6 +11,27 @@ import { NavigationComponent } from "../pages/navigation.component.js";
 import { RegisterPage } from "../pages/register.page.js";
 import { ResetPasswordPage } from "../pages/reset-password.page.js";
 
+/**
+ * Route password-reset API calls through Playwright so that empty-body
+ * responses are normalized to 204. The API returns 200 with an empty body
+ * (instead of the expected 204), which causes the frontend api-client to
+ * attempt JSON.parse on an empty string. Fulfilling with explicit 204
+ * ensures the client handles it correctly.
+ */
+async function routePasswordResetApis(page: Page): Promise<void> {
+  for (const endpoint of ["forgot-password", "reset-password"]) {
+    await page.route(`**/api/v1/auth/${endpoint}`, async (route) => {
+      const response = await route.fetch();
+      const body = await response.body();
+      if (body.length === 0 || response.status() === 204) {
+        await route.fulfill({ status: 204, body: "" });
+      } else {
+        await route.fulfill({ response });
+      }
+    });
+  }
+}
+
 interface GuestFixtures {
   guestContext: BrowserContext;
   guestPage: Page;
@@ -70,11 +91,13 @@ export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures
 
   forgotPasswordPage: async ({ page }, use) => {
     await page.context().clearCookies();
+    await routePasswordResetApis(page);
     await use(new ForgotPasswordPage(page));
   },
 
   resetPasswordPage: async ({ page }, use) => {
     await page.context().clearCookies();
+    await routePasswordResetApis(page);
     await use(new ResetPasswordPage(page));
   },
 

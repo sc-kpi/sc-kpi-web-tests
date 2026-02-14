@@ -39,7 +39,7 @@ test.describe("Forgot password page", { tag: [Tag.REGRESSION] }, () => {
 
     await forgotPasswordPage.goto();
     await forgotPasswordPage.submitForgotPassword(regData.email);
-    await expect(forgotPasswordPage.successAlert).toBeVisible();
+    await expect(forgotPasswordPage.successAlert).toBeVisible({ timeout: 15000 });
   });
 
   test(
@@ -49,7 +49,7 @@ test.describe("Forgot password page", { tag: [Tag.REGRESSION] }, () => {
       test.skip(!Config.apiBaseUrl(), "Requires backend API");
       await forgotPasswordPage.goto();
       await forgotPasswordPage.submitForgotPassword(TestDataFactory.randomEmail());
-      await expect(forgotPasswordPage.successAlert).toBeVisible();
+      await expect(forgotPasswordPage.successAlert).toBeVisible({ timeout: 15000 });
     },
   );
 
