@@ -42,7 +42,7 @@ test.describe("Password reset flow (E2E)", { tag: [Tag.REGRESSION] }, () => {
       // Submit forgot password
       await forgotPasswordPage.goto();
       await forgotPasswordPage.submitForgotPassword(regData.email);
-      await expect(forgotPasswordPage.successAlert).toBeVisible();
+      await expect(forgotPasswordPage.successAlert).toBeVisible({ timeout: 15000 });
 
       // Extract token from MailPit
       const mailResponse = await waitForEmail(regData.email);

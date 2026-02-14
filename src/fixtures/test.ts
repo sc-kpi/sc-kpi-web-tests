@@ -58,24 +58,20 @@ export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures
     await use(new HomePage(page));
   },
 
-  loginPage: async ({ page }, use) => {
-    await page.context().clearCookies();
-    await use(new LoginPage(page));
+  loginPage: async ({ guestPage }, use) => {
+    await use(new LoginPage(guestPage));
   },
 
-  registerPage: async ({ page }, use) => {
-    await page.context().clearCookies();
-    await use(new RegisterPage(page));
+  registerPage: async ({ guestPage }, use) => {
+    await use(new RegisterPage(guestPage));
   },
 
-  forgotPasswordPage: async ({ page }, use) => {
-    await page.context().clearCookies();
-    await use(new ForgotPasswordPage(page));
+  forgotPasswordPage: async ({ guestPage }, use) => {
+    await use(new ForgotPasswordPage(guestPage));
   },
 
-  resetPasswordPage: async ({ page }, use) => {
-    await page.context().clearCookies();
-    await use(new ResetPasswordPage(page));
+  resetPasswordPage: async ({ guestPage }, use) => {
+    await use(new ResetPasswordPage(guestPage));
   },
 
   navigation: async ({ page }, use) => {
