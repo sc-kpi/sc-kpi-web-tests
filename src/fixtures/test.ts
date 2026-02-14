@@ -11,6 +11,24 @@ import { NavigationComponent } from "../pages/navigation.component.js";
 import { RegisterPage } from "../pages/register.page.js";
 import { ResetPasswordPage } from "../pages/reset-password.page.js";
 
+/**
+ * Route password-reset API calls through Playwright to bypass browser CORS
+ * enforcement on 204 No Content responses. The server processes the request
+ * and returns 204 with CORS headers, but some browser/Playwright contexts
+ * fail to read the empty response due to CORS preflight handling for
+ * credentialed cross-origin requests returning no body.
+ */
+async function routePasswordResetApis(page: Page): Promise<void> {
+  const apiBaseUrl = Config.apiBaseUrl();
+  if (!apiBaseUrl) return;
+  for (const endpoint of ["forgot-password", "reset-password"]) {
+    await page.route(`${apiBaseUrl}/api/v1/auth/${endpoint}`, async (route) => {
+      const response = await route.fetch();
+      await route.fulfill({ response });
+    });
+  }
+}
+
 interface GuestFixtures {
   guestContext: BrowserContext;
   guestPage: Page;
@@ -58,20 +76,26 @@ export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures
     await use(new HomePage(page));
   },
 
-  loginPage: async ({ guestPage }, use) => {
-    await use(new LoginPage(guestPage));
+  loginPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await use(new LoginPage(page));
   },
 
-  registerPage: async ({ guestPage }, use) => {
-    await use(new RegisterPage(guestPage));
+  registerPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await use(new RegisterPage(page));
   },
 
-  forgotPasswordPage: async ({ guestPage }, use) => {
-    await use(new ForgotPasswordPage(guestPage));
+  forgotPasswordPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await routePasswordResetApis(page);
+    await use(new ForgotPasswordPage(page));
   },
 
-  resetPasswordPage: async ({ guestPage }, use) => {
-    await use(new ResetPasswordPage(guestPage));
+  resetPasswordPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await routePasswordResetApis(page);
+    await use(new ResetPasswordPage(page));
   },
 
   navigation: async ({ page }, use) => {
