@@ -13,20 +13,32 @@ import { ResetPasswordPage } from "../pages/reset-password.page.js";
 
 /**
  * Route password-reset API calls through Playwright to bypass browser CORS
- * enforcement on 204 No Content responses. The server processes the request
- * and returns 204 with CORS headers, but some browser/Playwright contexts
- * fail to read the empty response due to CORS preflight handling for
- * credentialed cross-origin requests returning no body.
+ * enforcement on 204 No Content responses. Uses glob pattern to match
+ * any origin, ensuring the route intercepts regardless of URL normalization.
  */
 async function routePasswordResetApis(page: Page): Promise<void> {
-  const apiBaseUrl = Config.apiBaseUrl();
-  if (!apiBaseUrl) return;
-  for (const endpoint of ["forgot-password", "reset-password"]) {
-    await page.route(`${apiBaseUrl}/api/v1/auth/${endpoint}`, async (route) => {
-      const response = await route.fetch();
-      await route.fulfill({ response });
-    });
-  }
+  page.on("requestfailed", (request) => {
+    console.log(
+      `[REQUEST FAILED] ${request.method()} ${request.url()} - ${request.failure()?.errorText}`,
+    );
+  });
+  page.on("console", (msg) => {
+    if (msg.type() === "error") {
+      console.log(`[BROWSER ERROR] ${msg.text()}`);
+    }
+  });
+  await page.route("**/api/v1/auth/forgot-password", async (route) => {
+    console.log(`[ROUTE] Intercepted ${route.request().method()} ${route.request().url()}`);
+    const response = await route.fetch();
+    console.log(`[ROUTE] Server responded: ${response.status()}`);
+    await route.fulfill({ response });
+  });
+  await page.route("**/api/v1/auth/reset-password", async (route) => {
+    console.log(`[ROUTE] Intercepted ${route.request().method()} ${route.request().url()}`);
+    const response = await route.fetch();
+    console.log(`[ROUTE] Server responded: ${response.status()}`);
+    await route.fulfill({ response });
+  });
 }
 
 interface GuestFixtures {
