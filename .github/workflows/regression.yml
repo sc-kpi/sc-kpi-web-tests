@@ -61,6 +61,15 @@ on:
         required: false
         default: ""
         type: string
+      shards:
+        description: "Number of parallel shards"
+        required: true
+        default: "1"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "4"
 
   workflow_call:
     inputs:
@@ -100,9 +109,14 @@ on:
         type: string
         required: false
         default: ""
+      shards:
+        type: string
+        required: false
+        default: "1"
 
 concurrency:
-  group: regression-${{ github.run_id }}
+  group: regression-${{ inputs.caller_event == 'schedule' && 'nightly' || github.run_id }}
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -111,17 +125,14 @@ permissions:
   actions: read
 
 jobs:
-  e2e-tests:
-    name: E2E Regression (${{ inputs.suite }})
+  build:
+    name: Build applications
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 15
+    if: inputs.base_url == ''
 
     steps:
-      - name: Checkout test repo
-        uses: actions/checkout@v4
-
       - name: Checkout sc-kpi-web
-        if: inputs.base_url == ''
         uses: actions/checkout@v4
         with:
           repository: sc-kpi/sc-kpi-web
@@ -138,25 +149,30 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: |
-            pnpm-lock.yaml
-            ${{ inputs.base_url == '' && 'sc-kpi-web/pnpm-lock.yaml' || 'pnpm-lock.yaml' }}
+          cache-dependency-path: sc-kpi-web/pnpm-lock.yaml
 
-      - name: Install and build sc-kpi-web
-        if: inputs.base_url == ''
+      - name: Install sc-kpi-web dependencies
         working-directory: sc-kpi-web
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm build
+        run: pnpm install --frozen-lockfile
 
-      - name: Start sc-kpi-web
-        if: inputs.base_url == ''
+      - name: Build sc-kpi-web
         working-directory: sc-kpi-web
-        run: pnpm start &
+        run: pnpm build
 
-      - name: Wait for sc-kpi-web
-        if: inputs.base_url == ''
-        run: npx wait-on http://localhost:3000 --timeout 60000
+      - name: Copy static assets
+        working-directory: sc-kpi-web
+        run: cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public
+
+      - name: Package web build
+        working-directory: sc-kpi-web
+        run: tar czf web-build.tar.gz -C .next/standalone .
+
+      - name: Upload web build
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: sc-kpi-web/web-build.tar.gz
+          retention-days: 1
 
       - name: Checkout sc-kpi-api
         uses: actions/checkout@v4
@@ -164,6 +180,109 @@ jobs:
           repository: sc-kpi/sc-kpi-api
           ref: ${{ inputs.api_branch }}
           path: sc-kpi-api
+
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: 25
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build API
+        working-directory: sc-kpi-api
+        run: ./gradlew :app:bootJar --no-daemon -x test
+
+      - name: Upload API jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-jar
+          path: sc-kpi-api/app/build/libs/sc-kpi-api.jar
+          retention-days: 1
+
+  prepare:
+    name: Prepare shard matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      total: ${{ steps.matrix.outputs.total }}
+
+    steps:
+      - name: Generate shard matrix
+        id: matrix
+        run: |
+          SHARDS=${{ inputs.rerun_failed == true && '1' || inputs.shards }}
+          echo "matrix=$(python3 -c "import json; print(json.dumps(list(range(1, int('$SHARDS')+1))))")" >> "$GITHUB_OUTPUT"
+          echo "total=$SHARDS" >> "$GITHUB_OUTPUT"
+
+  test:
+    name: "Test (shard ${{ matrix.shardIndex }}/${{ needs.prepare.outputs.total }})"
+    needs: [build, prepare]
+    if: always() && (needs.build.result == 'success' || needs.build.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shardIndex: ${{ fromJson(needs.prepare.outputs.matrix) }}
+
+    steps:
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install test dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Download web build
+        if: inputs.base_url == ''
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: web-build
+
+      - name: Start web app
+        if: inputs.base_url == ''
+        run: |
+          tar xzf web-build/web-build.tar.gz -C web-build
+          node web-build/server.js &
+
+      - name: Wait for web app
+        if: inputs.base_url == ''
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Download API jar
+        if: inputs.base_url == ''
+        uses: actions/download-artifact@v4
+        with:
+          name: api-jar
+          path: api-jar
 
       - name: Start MailPit
         if: inputs.base_url == ''
@@ -189,20 +308,15 @@ jobs:
           exit 1
 
       - name: Setup Java 25
+        if: inputs.base_url == ''
         uses: actions/setup-java@v4
         with:
           java-version: 25
           distribution: temurin
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-
-      - name: Build API
-        working-directory: sc-kpi-api
-        run: ./gradlew :app:bootJar --no-daemon -x test
-
       - name: Start API
-        run: java -jar sc-kpi-api/app/build/libs/sc-kpi-api.jar --spring.profiles.active=dev &
+        if: inputs.base_url == ''
+        run: java -jar api-jar/sc-kpi-api.jar --spring.profiles.active=dev &
         env:
           MAIL_HOST: localhost
           MAIL_PORT: "1025"
@@ -210,16 +324,11 @@ jobs:
           GOOGLE_CLIENT_SECRET: test-client-secret
 
       - name: Wait for API
+        if: inputs.base_url == ''
         run: npx wait-on http://localhost:8080/actuator/health --timeout 120000
 
-      - name: Install test dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
-
       - name: Download previous last-run state
-        if: inputs.rerun_failed == true && inputs.previous_run_id != ''
+        if: inputs.rerun_failed == true && inputs.previous_run_id != '' && matrix.shardIndex == 1
         uses: actions/download-artifact@v4
         with:
           name: last-run-state
@@ -231,30 +340,18 @@ jobs:
         id: run-tests
         if: inputs.rerun_failed == false
         continue-on-error: true
-        run: pnpm test:${{ inputs.suite }}
+        run: pnpm test:${{ inputs.suite }} --shard=${{ matrix.shardIndex }}/${{ needs.prepare.outputs.total }}
         env:
           TEST_ENV: ${{ inputs.environment }}
           CI: true
           WORKERS: ${{ inputs.workers }}
           BASE_URL: ${{ inputs.base_url || '' }}
 
-      - name: Capture initial failure count
-        if: always() && steps.run-tests.outcome == 'failure'
-        run: |
-          if [[ -f ".last-run.json" ]]; then
-            INITIAL_FAILED=$(jq '.failedTests | length' .last-run.json 2>/dev/null || echo 0)
-          else
-            INITIAL_FAILED=0
-          fi
-          echo "INITIAL_FAILED=$INITIAL_FAILED" >> "$GITHUB_ENV"
-
       - name: Auto-retry failed tests
         id: auto-retry
         if: inputs.rerun_failed == false && steps.run-tests.outcome == 'failure'
         continue-on-error: true
-        run: |
-          echo "Initial test run failed, attempting auto-retry..."
-          pnpm exec playwright test --last-failed || echo "Auto-retry completed with failures"
+        run: pnpm exec playwright test --last-failed
         env:
           TEST_ENV: ${{ inputs.environment }}
           CI: true
@@ -267,10 +364,9 @@ jobs:
         continue-on-error: true
         run: |
           if [[ ! -f ".last-run.json" ]]; then
-            echo "::error::.last-run.json not found. Make sure the previous run ID is correct and had failures."
+            echo "::error::.last-run.json not found."
             exit 1
           fi
-          echo "Rerunning failed tests from run ${{ inputs.previous_run_id }}..."
           pnpm exec playwright test --last-failed
         env:
           TEST_ENV: ${{ inputs.environment }}
@@ -278,66 +374,87 @@ jobs:
           WORKERS: ${{ inputs.workers }}
           BASE_URL: ${{ inputs.base_url || '' }}
 
+      - name: Upload blob report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blob-report-${{ matrix.shardIndex }}
+          path: blob-report/
+          retention-days: 14
+          if-no-files-found: ignore
+
+      - name: Upload Allure results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.shardIndex }}
+          path: allure-results/
+          retention-days: 14
+          if-no-files-found: ignore
+
       - name: Upload last-run state
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: last-run-state
+          name: last-run-state-${{ matrix.shardIndex }}
           path: .last-run.json
           retention-days: 14
           if-no-files-found: ignore
 
-      - name: Test outcome
+      - name: Cleanup MailPit
         if: always()
-        run: |
-          INITIAL="${{ steps.run-tests.outcome }}"
-          RETRY="${{ steps.auto-retry.outcome }}"
-          MANUAL="${{ steps.manual-rerun.outcome }}"
-          if [[ "$MANUAL" != "skipped" && -n "$MANUAL" ]]; then
-            echo "RUN_TYPE=manual-rerun" >> "$GITHUB_ENV"
-            echo "RERUN_OUTCOME=$MANUAL" >> "$GITHUB_ENV"
-          elif [[ "$INITIAL" == "failure" && "$RETRY" != "skipped" ]]; then
-            echo "RUN_TYPE=auto-retry" >> "$GITHUB_ENV"
-            echo "RERUN_OUTCOME=$RETRY" >> "$GITHUB_ENV"
-          else
-            echo "RUN_TYPE=initial" >> "$GITHUB_ENV"
-          fi
-          if [[ "$MANUAL" == "failure" ]]; then
-            echo "::warning::Manual rerun of failed E2E tests failed. Check the Allure report for details."
-          elif [[ "$RETRY" == "failure" ]]; then
-            echo "::warning::Auto-retry of failed E2E tests also failed. Check the Allure report for details."
-          elif [[ "$INITIAL" == "failure" && "$RETRY" == "success" ]]; then
-            echo "::notice::Some E2E tests failed initially but passed on auto-retry."
-          elif [[ "$INITIAL" == "failure" ]]; then
-            echo "::warning::Some E2E tests failed. Check the Allure report for details."
-          fi
+        run: docker rm -f mailpit || true
+
+  report:
+    name: Report
+    needs: [test, prepare]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout test repo
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download blob reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: blob-report-*
+          path: all-blob-reports
+          merge-multiple: true
+
+      - name: Merge HTML report
+        run: pnpm exec playwright merge-reports --reporter html ./all-blob-reports
+
+      - name: Download Allure results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
 
       - name: Upload Playwright report
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 14
 
-      - name: Upload Allure results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: allure-results/
-          retention-days: 14
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: test-results/
-          retention-days: 14
-
       - name: Checkout gh-pages for Allure history
-        if: always()
         uses: actions/checkout@v4
         with:
           ref: gh-pages
@@ -345,7 +462,6 @@ jobs:
         continue-on-error: true
 
       - name: Generate Allure report
-        if: always()
         uses: simple-elf/allure-report-action@v1.13
         with:
           allure_results: allure-results
@@ -355,16 +471,22 @@ jobs:
           keep_reports: 50
 
       - name: Fix Allure report permissions
-        if: always()
         run: sudo rm -rf allure-history/.git
 
       - name: Deploy Allure report to GitHub Pages
-        if: always()
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
           publish_dir: allure-history
+
+      - name: Determine test outcome
+        run: |
+          if [[ "${{ needs.test.result }}" == "success" ]]; then
+            echo "TEST_STATUS=PASSED" >> "$GITHUB_ENV"
+          else
+            echo "TEST_STATUS=FAILED" >> "$GITHUB_ENV"
+          fi
 
       - name: Telegram notification
         if: always()
@@ -386,21 +508,9 @@ jobs:
             MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
             SECONDS=$((TOTAL_SECS % 60))
           else
-            JUNIT_FILE="test-results/junit.xml"
-            if [[ -f "$JUNIT_FILE" ]]; then
-              TOTAL=$(grep -oP 'tests="\K[0-9]+' "$JUNIT_FILE" | head -1)
-              FAILED=$(grep -oP 'failures="\K[0-9]+' "$JUNIT_FILE" | head -1)
-              SKIPPED=$(grep -oP 'skipped="\K[0-9]+' "$JUNIT_FILE" | head -1)
-              DURATION=$(grep -oP 'time="\K[0-9.]+' "$JUNIT_FILE" | head -1)
-              PASSED=$((TOTAL - FAILED - SKIPPED))
-            else
-              TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0; DURATION=0
-            fi
+            TOTAL=0; PASSED=0; FAILED=0; SKIPPED=0
             BROKEN=0; UNKNOWN=0
-            TOTAL_SECS=$(echo "$DURATION / 1" | bc)
-            HOURS=$((TOTAL_SECS / 3600))
-            MINUTES=$(( (TOTAL_SECS % 3600) / 60 ))
-            SECONDS=$((TOTAL_SECS % 60))
+            HOURS=0; MINUTES=0; SECONDS=0
           fi
 
           SUITE_NAME="${{ inputs.suite }}"
@@ -452,6 +562,7 @@ jobs:
           SETUP+=$'\n'"— api_branch: ${{ inputs.api_branch }}"
           SETUP+=$'\n'"— environment: ${{ inputs.environment }}"
           SETUP+=$'\n'"— workers: ${{ inputs.workers }}"
+          SETUP+=$'\n'"— shards: ${{ inputs.shards }}"
           SETUP+=$'\n'"— rerun_failed: ${{ inputs.rerun_failed }}"
           if [[ -n "${{ inputs.base_url }}" ]]; then
             SETUP+=$'\n'"— base_url: ${{ inputs.base_url }}"
@@ -460,24 +571,7 @@ jobs:
             SETUP+=$'\n'"— previous_run_id: ${{ inputs.previous_run_id }}"
           fi
 
-          if [[ "$RUN_TYPE" == "auto-retry" ]]; then
-            if [[ "$RERUN_OUTCOME" == "success" ]]; then
-              RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → all recovered ✅"
-            else
-              STILL_FAILED=$((FAILED + BROKEN))
-              RECOVERED=$(( ${INITIAL_FAILED:-0} - STILL_FAILED ))
-              if [[ $RECOVERED -lt 0 ]]; then RECOVERED=0; fi
-              RETRY_LINE="🔄  <b>Auto-retry:</b> ${INITIAL_FAILED} initially failed → ${RECOVERED} recovered, ${STILL_FAILED} still failing"
-            fi
-          elif [[ "$RUN_TYPE" == "manual-rerun" ]]; then
-            if [[ "$RERUN_OUTCOME" == "success" ]]; then
-              RETRY_LINE="🔄  <b>Manual rerun:</b> passed ✅"
-            else
-              RETRY_LINE="🔄  <b>Manual rerun:</b> failed ❌"
-            fi
-          else
-            RETRY_LINE="🔄  <b>Retry:</b> not needed"
-          fi
+          RETRY_LINE="🔄  <b>Shards:</b> ${{ needs.prepare.outputs.total }}"
 
           ACTOR="${{ github.triggering_actor }}"
           CALLER_EVENT="${{ inputs.caller_event }}"
@@ -543,9 +637,6 @@ jobs:
           | **API Branch** | \`${{ inputs.api_branch }}\` |
           | **Base URL** | \`${{ inputs.base_url || 'http://localhost:3000 (local build)' }}\` |
           | **Workers** | \`${{ inputs.workers }}\` |
+          | **Shards** | \`${{ inputs.shards }}\` |
           | **Allure Report** | ${REPORT_URL} |
           EOF
-
-      - name: Cleanup MailPit
-        if: always()
-        run: docker rm -f mailpit || true
