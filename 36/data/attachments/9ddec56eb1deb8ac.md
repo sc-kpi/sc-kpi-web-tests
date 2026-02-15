@@ -1,0 +1,271 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - heading "Адміністрування" [level=2] [ref=e5]
+      - generic [ref=e6]:
+        - link "Користувачі" [ref=e7] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Функціональні прапорці" [ref=e8] [cursor=pointer]:
+          - /url: /admin/feature-flags
+        - link "Журнал аудиту" [ref=e9] [cursor=pointer]:
+          - /url: /admin/audit-logs
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - heading "Функціональні прапорці" [level=1] [ref=e13]
+          - link "Створити прапорець" [ref=e14] [cursor=pointer]:
+            - /url: /admin/feature-flags/new
+            - button "Створити прапорець" [ref=e15]
+        - table [ref=e17]:
+          - rowgroup [ref=e18]:
+            - row "Ключ Назва Статус Середовище Розгортання % Дії" [ref=e19]:
+              - columnheader "Ключ" [ref=e20]
+              - columnheader "Назва" [ref=e21]
+              - columnheader "Статус" [ref=e22]
+              - columnheader "Середовище" [ref=e23]
+              - columnheader "Розгортання %" [ref=e24]
+              - columnheader "Дії" [ref=e25]
+          - rowgroup [ref=e26]:
+            - row "audit.system Audit System Увімкнено — 100% Off Редагувати Видалити" [ref=e27]:
+              - cell "audit.system" [ref=e28]
+              - cell "Audit System" [ref=e29]
+              - cell "Увімкнено" [ref=e30]:
+                - generic [ref=e31]: Увімкнено
+              - cell "—" [ref=e32]
+              - cell "100%" [ref=e33]
+              - cell "Off Редагувати Видалити" [ref=e34]:
+                - generic [ref=e35]:
+                  - button "Off" [ref=e36]
+                  - link "Редагувати" [ref=e37] [cursor=pointer]:
+                    - /url: /admin/feature-flags/fd0c6c68-0c5e-484d-8cfc-6067a19e5438
+                    - button "Редагувати" [ref=e38]
+                  - button "Видалити" [ref=e39]
+            - row "auth.oauth2.google Google OAuth Увімкнено — 100% Off Редагувати Видалити" [ref=e40]:
+              - cell "auth.oauth2.google" [ref=e41]
+              - cell "Google OAuth" [ref=e42]
+              - cell "Увімкнено" [ref=e43]:
+                - generic [ref=e44]: Увімкнено
+              - cell "—" [ref=e45]
+              - cell "100%" [ref=e46]
+              - cell "Off Редагувати Видалити" [ref=e47]:
+                - generic [ref=e48]:
+                  - button "Off" [ref=e49]
+                  - link "Редагувати" [ref=e50] [cursor=pointer]:
+                    - /url: /admin/feature-flags/edeb6ac5-3e5d-4cd3-9a92-a0eb97ea8e64
+                    - button "Редагувати" [ref=e51]
+                  - button "Видалити" [ref=e52]
+            - row "auth.password-reset Password Reset Увімкнено — 100% Off Редагувати Видалити" [ref=e53]:
+              - cell "auth.password-reset" [ref=e54]
+              - cell "Password Reset" [ref=e55]
+              - cell "Увімкнено" [ref=e56]:
+                - generic [ref=e57]: Увімкнено
+              - cell "—" [ref=e58]
+              - cell "100%" [ref=e59]
+              - cell "Off Редагувати Видалити" [ref=e60]:
+                - generic [ref=e61]:
+                  - button "Off" [ref=e62]
+                  - link "Редагувати" [ref=e63] [cursor=pointer]:
+                    - /url: /admin/feature-flags/f605b680-883c-450a-b6c5-b7cb9e623728
+                    - button "Редагувати" [ref=e64]
+                  - button "Видалити" [ref=e65]
+            - row "auth.registration Registration Увімкнено — 100% Off Редагувати Видалити" [ref=e66]:
+              - cell "auth.registration" [ref=e67]
+              - cell "Registration" [ref=e68]
+              - cell "Увімкнено" [ref=e69]:
+                - generic [ref=e70]: Увімкнено
+              - cell "—" [ref=e71]
+              - cell "100%" [ref=e72]
+              - cell "Off Редагувати Видалити" [ref=e73]:
+                - generic [ref=e74]:
+                  - button "Off" [ref=e75]
+                  - link "Редагувати" [ref=e76] [cursor=pointer]:
+                    - /url: /admin/feature-flags/16214c13-76ac-43b5-b395-609dec5d4bb5
+                    - button "Редагувати" [ref=e77]
+                  - button "Видалити" [ref=e78]
+            - row "notifications.telegram Telegram Notifications Вимкнено — 100% On Редагувати Видалити" [ref=e79]:
+              - cell "notifications.telegram" [ref=e80]
+              - cell "Telegram Notifications" [ref=e81]
+              - cell "Вимкнено" [ref=e82]:
+                - generic [ref=e83]: Вимкнено
+              - cell "—" [ref=e84]
+              - cell "100%" [ref=e85]
+              - cell "On Редагувати Видалити" [ref=e86]:
+                - generic [ref=e87]:
+                  - button "On" [ref=e88]
+                  - link "Редагувати" [ref=e89] [cursor=pointer]:
+                    - /url: /admin/feature-flags/24241901-a9c9-48b0-bac2-d1aa3f9da395
+                    - button "Редагувати" [ref=e90]
+                  - button "Видалити" [ref=e91]
+            - row "engagements.clubs Clubs Увімкнено — 100% Off Редагувати Видалити" [ref=e92]:
+              - cell "engagements.clubs" [ref=e93]
+              - cell "Clubs" [ref=e94]
+              - cell "Увімкнено" [ref=e95]:
+                - generic [ref=e96]: Увімкнено
+              - cell "—" [ref=e97]
+              - cell "100%" [ref=e98]
+              - cell "Off Редагувати Видалити" [ref=e99]:
+                - generic [ref=e100]:
+                  - button "Off" [ref=e101]
+                  - link "Редагувати" [ref=e102] [cursor=pointer]:
+                    - /url: /admin/feature-flags/7c616a27-ee63-46a9-ba0f-b139d3ab2108
+                    - button "Редагувати" [ref=e103]
+                  - button "Видалити" [ref=e104]
+            - row "engagements.projects Projects Увімкнено — 100% Off Редагувати Видалити" [ref=e105]:
+              - cell "engagements.projects" [ref=e106]
+              - cell "Projects" [ref=e107]
+              - cell "Увімкнено" [ref=e108]:
+                - generic [ref=e109]: Увімкнено
+              - cell "—" [ref=e110]
+              - cell "100%" [ref=e111]
+              - cell "Off Редагувати Видалити" [ref=e112]:
+                - generic [ref=e113]:
+                  - button "Off" [ref=e114]
+                  - link "Редагувати" [ref=e115] [cursor=pointer]:
+                    - /url: /admin/feature-flags/db2256fc-aa6a-47a7-a469-8b796c5c1e0c
+                    - button "Редагувати" [ref=e116]
+                  - button "Видалити" [ref=e117]
+            - row "council.departments Departments Увімкнено — 100% Off Редагувати Видалити" [ref=e118]:
+              - cell "council.departments" [ref=e119]
+              - cell "Departments" [ref=e120]
+              - cell "Увімкнено" [ref=e121]:
+                - generic [ref=e122]: Увімкнено
+              - cell "—" [ref=e123]
+              - cell "100%" [ref=e124]
+              - cell "Off Редагувати Видалити" [ref=e125]:
+                - generic [ref=e126]:
+                  - button "Off" [ref=e127]
+                  - link "Редагувати" [ref=e128] [cursor=pointer]:
+                    - /url: /admin/feature-flags/4aa27658-d8d8-4f1b-9c10-f6ca6afd4d25
+                    - button "Редагувати" [ref=e129]
+                  - button "Видалити" [ref=e130]
+            - row "documents.management Documents Увімкнено — 100% Off Редагувати Видалити" [ref=e131]:
+              - cell "documents.management" [ref=e132]
+              - cell "Documents" [ref=e133]
+              - cell "Увімкнено" [ref=e134]:
+                - generic [ref=e135]: Увімкнено
+              - cell "—" [ref=e136]
+              - cell "100%" [ref=e137]
+              - cell "Off Редагувати Видалити" [ref=e138]:
+                - generic [ref=e139]:
+                  - button "Off" [ref=e140]
+                  - link "Редагувати" [ref=e141] [cursor=pointer]:
+                    - /url: /admin/feature-flags/dffcdc1f-2370-40e7-b089-3a760bc69e0d
+                    - button "Редагувати" [ref=e142]
+                  - button "Видалити" [ref=e143]
+            - row "user.partner-levels Partner Levels Увімкнено — 100% Off Редагувати Видалити" [ref=e144]:
+              - cell "user.partner-levels" [ref=e145]
+              - cell "Partner Levels" [ref=e146]
+              - cell "Увімкнено" [ref=e147]:
+                - generic [ref=e148]: Увімкнено
+              - cell "—" [ref=e149]
+              - cell "100%" [ref=e150]
+              - cell "Off Редагувати Видалити" [ref=e151]:
+                - generic [ref=e152]:
+                  - button "Off" [ref=e153]
+                  - link "Редагувати" [ref=e154] [cursor=pointer]:
+                    - /url: /admin/feature-flags/793674d2-c476-4c50-8a2a-68eb8825499c
+                    - button "Редагувати" [ref=e155]
+                  - button "Видалити" [ref=e156]
+            - row "test.e2e.cqnikszr E2E Test Flag unde Увімкнено dev 100% Off Редагувати Видалити" [ref=e157]:
+              - cell "test.e2e.cqnikszr" [ref=e158]
+              - cell "E2E Test Flag unde" [ref=e159]
+              - cell "Увімкнено" [ref=e160]:
+                - generic [ref=e161]: Увімкнено
+              - cell "dev" [ref=e162]
+              - cell "100%" [ref=e163]
+              - cell "Off Редагувати Видалити" [ref=e164]:
+                - generic [ref=e165]:
+                  - button "Off" [ref=e166]
+                  - link "Редагувати" [ref=e167] [cursor=pointer]:
+                    - /url: /admin/feature-flags/27670136-b179-45d7-a565-9febbb318b34
+                    - button "Редагувати" [ref=e168]
+                  - button "Видалити" [ref=e169]
+            - row "test.min.sbnuhsel Minimal Flag Увімкнено — 100% Off Редагувати Видалити" [ref=e170]:
+              - cell "test.min.sbnuhsel" [ref=e171]
+              - cell "Minimal Flag" [ref=e172]
+              - cell "Увімкнено" [ref=e173]:
+                - generic [ref=e174]: Увімкнено
+              - cell "—" [ref=e175]
+              - cell "100%" [ref=e176]
+              - cell "Off Редагувати Видалити" [ref=e177]:
+                - generic [ref=e178]:
+                  - button "Off" [ref=e179]
+                  - link "Редагувати" [ref=e180] [cursor=pointer]:
+                    - /url: /admin/feature-flags/82c6af1b-304a-46a6-b3b4-905539a05d13
+                    - button "Редагувати" [ref=e181]
+                  - button "Видалити" [ref=e182]
+            - row "test.e2e.myamdruz E2E Test Flag terreo Увімкнено dev 100% Off Редагувати Видалити" [ref=e183]:
+              - cell "test.e2e.myamdruz" [ref=e184]
+              - cell "E2E Test Flag terreo" [ref=e185]
+              - cell "Увімкнено" [ref=e186]:
+                - generic [ref=e187]: Увімкнено
+              - cell "dev" [ref=e188]
+              - cell "100%" [ref=e189]
+              - cell "Off Редагувати Видалити" [ref=e190]:
+                - generic [ref=e191]:
+                  - button "Off" [ref=e192]
+                  - link "Редагувати" [ref=e193] [cursor=pointer]:
+                    - /url: /admin/feature-flags/227feebf-41fe-4a94-bc36-378b7abe2832
+                    - button "Редагувати" [ref=e194]
+                  - button "Видалити" [ref=e195]
+            - row "test.min.crvzidpv Minimal Flag Увімкнено — 100% Off Редагувати Видалити" [ref=e196]:
+              - cell "test.min.crvzidpv" [ref=e197]
+              - cell "Minimal Flag" [ref=e198]
+              - cell "Увімкнено" [ref=e199]:
+                - generic [ref=e200]: Увімкнено
+              - cell "—" [ref=e201]
+              - cell "100%" [ref=e202]
+              - cell "Off Редагувати Видалити" [ref=e203]:
+                - generic [ref=e204]:
+                  - button "Off" [ref=e205]
+                  - link "Редагувати" [ref=e206] [cursor=pointer]:
+                    - /url: /admin/feature-flags/36df2466-a15a-4925-a3bd-b11faa418edd
+                    - button "Редагувати" [ref=e207]
+                  - button "Видалити" [ref=e208]
+            - row "e2e-flags-8408bf76-0 E2E Flag В’ячеслав Григоришин Вимкнено — 100% On Редагувати Видалити" [ref=e209]:
+              - cell "e2e-flags-8408bf76-0" [ref=e210]
+              - cell "E2E Flag В’ячеслав Григоришин" [ref=e211]
+              - cell "Вимкнено" [ref=e212]:
+                - generic [ref=e213]: Вимкнено
+              - cell "—" [ref=e214]
+              - cell "100%" [ref=e215]
+              - cell "On Редагувати Видалити" [ref=e216]:
+                - generic [ref=e217]:
+                  - button "On" [ref=e218]
+                  - link "Редагувати" [ref=e219] [cursor=pointer]:
+                    - /url: /admin/feature-flags/998f0d26-243d-47a7-9f70-b53feca8e47f
+                    - button "Редагувати" [ref=e220]
+                  - button "Видалити" [ref=e221]
+            - row "e2e-flags-8408bf76-1 E2E Flag Довгалевський Велемир Вимкнено — 100% On Редагувати Видалити" [ref=e222]:
+              - cell "e2e-flags-8408bf76-1" [ref=e223]
+              - cell "E2E Flag Довгалевський Велемир" [ref=e224]
+              - cell "Вимкнено" [ref=e225]:
+                - generic [ref=e226]: Вимкнено
+              - cell "—" [ref=e227]
+              - cell "100%" [ref=e228]
+              - cell "On Редагувати Видалити" [ref=e229]:
+                - generic [ref=e230]:
+                  - button "On" [ref=e231]
+                  - link "Редагувати" [ref=e232] [cursor=pointer]:
+                    - /url: /admin/feature-flags/17d4629a-9088-4a93-a5ed-f41c0dede836
+                    - button "Редагувати" [ref=e233]
+                  - button "Видалити" [ref=e234]
+            - row "e2e-flags-8408bf76-2 E2E Flag Ярослава Боярчук Вимкнено — 100% On Редагувати Видалити" [ref=e235]:
+              - cell "e2e-flags-8408bf76-2" [ref=e236]
+              - cell "E2E Flag Ярослава Боярчук" [ref=e237]
+              - cell "Вимкнено" [ref=e238]:
+                - generic [ref=e239]: Вимкнено
+              - cell "—" [ref=e240]
+              - cell "100%" [ref=e241]
+              - cell "On Редагувати Видалити" [ref=e242]:
+                - generic [ref=e243]:
+                  - button "On" [ref=e244]
+                  - link "Редагувати" [ref=e245] [cursor=pointer]:
+                    - /url: /admin/feature-flags/9dd5a9b1-32ad-4c64-ac85-117bba061006
+                    - button "Редагувати" [ref=e246]
+                  - button "Видалити" [ref=e247]
+```

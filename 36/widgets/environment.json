@@ -1,0 +1,1 @@
+[{"values":["http://localhost:3000"],"name":"BASE_URL"},{"values":["ci"],"name":"TEST_ENV"},{"values":["true"],"name":"AUTH_ENABLED"},{"values":["v22.22.0"],"name":"NODE_VERSION"}]
