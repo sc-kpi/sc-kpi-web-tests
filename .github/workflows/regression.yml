@@ -161,7 +161,9 @@ jobs:
 
       - name: Copy static assets
         working-directory: sc-kpi-web
-        run: cp -r .next/static .next/standalone/.next/static && cp -r public .next/standalone/public
+        run: |
+          cp -r .next/static .next/standalone/.next/static
+          if [ -d public ]; then cp -r public .next/standalone/public; fi
 
       - name: Package web build
         working-directory: sc-kpi-web
@@ -436,8 +438,10 @@ jobs:
           pattern: blob-report-*
           path: all-blob-reports
           merge-multiple: true
+        continue-on-error: true
 
       - name: Merge HTML report
+        if: hashFiles('all-blob-reports/**') != ''
         run: pnpm exec playwright merge-reports --reporter html ./all-blob-reports
 
       - name: Download Allure results
@@ -446,6 +450,7 @@ jobs:
           pattern: allure-results-*
           path: allure-results
           merge-multiple: true
+        continue-on-error: true
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
