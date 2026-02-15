@@ -1,0 +1,34 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e4]:
+    - generic [ref=e5]:
+      - heading "Реєстрація" [level=3] [ref=e6]
+      - generic [ref=e7]: Створіть новий акаунт
+    - generic [ref=e9]:
+      - alert [ref=e10]: Помилка реєстрації
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: Ім'я
+          - textbox "Ім'я" [ref=e14]: Мар’ян
+        - generic [ref=e15]:
+          - generic [ref=e16]: Прізвище
+          - textbox "Прізвище" [ref=e17]: Гарай
+      - generic [ref=e18]:
+        - generic [ref=e19]: Електронна пошта
+        - textbox "Електронна пошта" [ref=e20]: Dana_Shukhevich7@ex.ua
+      - generic [ref=e21]:
+        - generic [ref=e22]: Пароль
+        - textbox "Пароль" [ref=e23]: w333K9AJoWWB
+      - button "Реєстрація" [ref=e24]
+      - generic [ref=e29]: або продовжити з
+      - button "Продовжити з Google" [ref=e30]:
+        - img
+        - text: Продовжити з Google
+      - paragraph [ref=e31]:
+        - text: Вже є акаунт?
+        - link "Увійти" [ref=e32] [cursor=pointer]:
+          - /url: /login
+  - alert [ref=e33]
+```

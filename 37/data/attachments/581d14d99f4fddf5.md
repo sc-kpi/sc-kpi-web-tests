@@ -1,0 +1,335 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - navigation [ref=e4]:
+      - heading "Адміністрування" [level=2] [ref=e5]
+      - generic [ref=e6]:
+        - link "Користувачі" [ref=e7] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Функціональні прапорці" [ref=e8] [cursor=pointer]:
+          - /url: /admin/feature-flags
+        - link "Журнал аудиту" [ref=e9] [cursor=pointer]:
+          - /url: /admin/audit-logs
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - heading "Користувачі" [level=1] [ref=e13]
+          - link "Створити користувача" [ref=e14] [cursor=pointer]:
+            - /url: /admin/users/new
+            - button "Створити користувача" [ref=e15]
+        - table [ref=e17]:
+          - rowgroup [ref=e18]:
+            - row "Користувачі Рівень Статус Дії" [ref=e19]:
+              - columnheader "Користувачі" [ref=e20]
+              - columnheader "Рівень" [ref=e21]
+              - columnheader "Статус" [ref=e22]
+              - columnheader "Дії" [ref=e23]
+          - rowgroup [ref=e24]:
+            - row "Test Admin admin@test.kpi.ua Адміністратор Активний Редагувати користувача Видалити користувача" [ref=e25]:
+              - cell "Test Admin admin@test.kpi.ua" [ref=e26]:
+                - generic [ref=e27]:
+                  - paragraph [ref=e28]: Test Admin
+                  - paragraph [ref=e29]: admin@test.kpi.ua
+              - cell "Адміністратор" [ref=e30]:
+                - generic [ref=e31]: Адміністратор
+              - cell "Активний" [ref=e32]:
+                - generic [ref=e33]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e34]:
+                - generic [ref=e35]:
+                  - link "Редагувати користувача" [ref=e36] [cursor=pointer]:
+                    - /url: /admin/users/3ca5308a-7381-4c55-bde4-53875b577413
+                    - button "Редагувати користувача" [ref=e37]
+                  - button "Видалити користувача" [ref=e38]
+            - row "Test Basic basic@test.kpi.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e39]:
+              - cell "Test Basic basic@test.kpi.ua" [ref=e40]:
+                - generic [ref=e41]:
+                  - paragraph [ref=e42]: Test Basic
+                  - paragraph [ref=e43]: basic@test.kpi.ua
+              - cell "Базовий" [ref=e44]:
+                - generic [ref=e45]: Базовий
+              - cell "Активний" [ref=e46]:
+                - generic [ref=e47]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e48]:
+                - generic [ref=e49]:
+                  - link "Редагувати користувача" [ref=e50] [cursor=pointer]:
+                    - /url: /admin/users/ee750c13-8aa6-4077-b03a-640c665d62a9
+                    - button "Редагувати користувача" [ref=e51]
+                  - button "Видалити користувача" [ref=e52]
+            - row "Олесь Петренко Anastasuui15@i.ua Базовий Неактивний Редагувати користувача Видалити користувача" [ref=e53]:
+              - cell "Олесь Петренко Anastasuui15@i.ua" [ref=e54]:
+                - generic [ref=e55]:
+                  - paragraph [ref=e56]: Олесь Петренко
+                  - paragraph [ref=e57]: Anastasuui15@i.ua
+              - cell "Базовий" [ref=e58]:
+                - generic [ref=e59]: Базовий
+              - cell "Неактивний" [ref=e60]:
+                - generic [ref=e61]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e62]:
+                - generic [ref=e63]:
+                  - link "Редагувати користувача" [ref=e64] [cursor=pointer]:
+                    - /url: /admin/users/96d16e26-935e-4741-a647-5e3aa4a82086
+                    - button "Редагувати користувача" [ref=e65]
+                  - button "Видалити користувача" [ref=e66]
+            - row "Ангеліна Ткаченко Lavruun_Yaschuk@ex.ua Базовий Неактивний Редагувати користувача Видалити користувача" [ref=e67]:
+              - cell "Ангеліна Ткаченко Lavruun_Yaschuk@ex.ua" [ref=e68]:
+                - generic [ref=e69]:
+                  - paragraph [ref=e70]: Ангеліна Ткаченко
+                  - paragraph [ref=e71]: Lavruun_Yaschuk@ex.ua
+              - cell "Базовий" [ref=e72]:
+                - generic [ref=e73]: Базовий
+              - cell "Неактивний" [ref=e74]:
+                - generic [ref=e75]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e76]:
+                - generic [ref=e77]:
+                  - link "Редагувати користувача" [ref=e78] [cursor=pointer]:
+                    - /url: /admin/users/5d3dbba7-9ce5-4f93-bb8e-7535591ca3a6
+                    - button "Редагувати користувача" [ref=e79]
+                  - button "Видалити користувача" [ref=e80]
+            - row "Ірина Шудрик Alukvuuna40@ex.ua Базовий Неактивний Редагувати користувача Видалити користувача" [ref=e81]:
+              - cell "Ірина Шудрик Alukvuuna40@ex.ua" [ref=e82]:
+                - generic [ref=e83]:
+                  - paragraph [ref=e84]: Ірина Шудрик
+                  - paragraph [ref=e85]: Alukvuuna40@ex.ua
+              - cell "Базовий" [ref=e86]:
+                - generic [ref=e87]: Базовий
+              - cell "Неактивний" [ref=e88]:
+                - generic [ref=e89]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e90]:
+                - generic [ref=e91]:
+                  - link "Редагувати користувача" [ref=e92] [cursor=pointer]:
+                    - /url: /admin/users/b0bd0429-7f33-4312-ae01-483b1dc19b8e
+                    - button "Редагувати користувача" [ref=e93]
+                  - button "Видалити користувача" [ref=e94]
+            - row "Лаврін Гамула Dobroslava_Pavluuv54@ex.ua Розширений Неактивний Редагувати користувача Видалити користувача" [ref=e95]:
+              - cell "Лаврін Гамула Dobroslava_Pavluuv54@ex.ua" [ref=e96]:
+                - generic [ref=e97]:
+                  - paragraph [ref=e98]: Лаврін Гамула
+                  - paragraph [ref=e99]: Dobroslava_Pavluuv54@ex.ua
+              - cell "Розширений" [ref=e100]:
+                - generic [ref=e101]: Розширений
+              - cell "Неактивний" [ref=e102]:
+                - generic [ref=e103]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e104]:
+                - generic [ref=e105]:
+                  - link "Редагувати користувача" [ref=e106] [cursor=pointer]:
+                    - /url: /admin/users/82aef70a-78fc-49a7-ba0e-d0e6b5182534
+                    - button "Редагувати користувача" [ref=e107]
+                  - button "Видалити користувача" [ref=e108]
+            - row "Алевтина Палій Roman.Rozputnya@meta.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e109]:
+              - cell "Алевтина Палій Roman.Rozputnya@meta.ua" [ref=e110]:
+                - generic [ref=e111]:
+                  - paragraph [ref=e112]: Алевтина Палій
+                  - paragraph [ref=e113]: Roman.Rozputnya@meta.ua
+              - cell "Базовий" [ref=e114]:
+                - generic [ref=e115]: Базовий
+              - cell "Активний" [ref=e116]:
+                - generic [ref=e117]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e118]:
+                - generic [ref=e119]:
+                  - link "Редагувати користувача" [ref=e120] [cursor=pointer]:
+                    - /url: /admin/users/140002a2-ef86-40e1-a42c-538666fa5bf3
+                    - button "Редагувати користувача" [ref=e121]
+                  - button "Видалити користувача" [ref=e122]
+            - row "Анатолій Саєнко Vuurguunuuya_Semeschuk@e-mail.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e123]:
+              - cell "Анатолій Саєнко Vuurguunuuya_Semeschuk@e-mail.ua" [ref=e124]:
+                - generic [ref=e125]:
+                  - paragraph [ref=e126]: Анатолій Саєнко
+                  - paragraph [ref=e127]: Vuurguunuuya_Semeschuk@e-mail.ua
+              - cell "Базовий" [ref=e128]:
+                - generic [ref=e129]: Базовий
+              - cell "Активний" [ref=e130]:
+                - generic [ref=e131]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e132]:
+                - generic [ref=e133]:
+                  - link "Редагувати користувача" [ref=e134] [cursor=pointer]:
+                    - /url: /admin/users/047f9ecf-841b-472e-847d-747bc54140a0
+                    - button "Редагувати користувача" [ref=e135]
+                  - button "Видалити користувача" [ref=e136]
+            - row "Роксолана Іванів Yaroslava_Sausnko@ukr.net Базовий Активний Редагувати користувача Видалити користувача" [ref=e137]:
+              - cell "Роксолана Іванів Yaroslava_Sausnko@ukr.net" [ref=e138]:
+                - generic [ref=e139]:
+                  - paragraph [ref=e140]: Роксолана Іванів
+                  - paragraph [ref=e141]: Yaroslava_Sausnko@ukr.net
+              - cell "Базовий" [ref=e142]:
+                - generic [ref=e143]: Базовий
+              - cell "Активний" [ref=e144]:
+                - generic [ref=e145]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e146]:
+                - generic [ref=e147]:
+                  - link "Редагувати користувача" [ref=e148] [cursor=pointer]:
+                    - /url: /admin/users/4f4f4f20-7990-416d-9ea7-731b59103dab
+                    - button "Редагувати користувача" [ref=e149]
+                  - button "Видалити користувача" [ref=e150]
+            - row "Долеслава Євенко Slava.skvpak@ex.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e151]:
+              - cell "Долеслава Євенко Slava.skvpak@ex.ua" [ref=e152]:
+                - generic [ref=e153]:
+                  - paragraph [ref=e154]: Долеслава Євенко
+                  - paragraph [ref=e155]: Slava.skvpak@ex.ua
+              - cell "Базовий" [ref=e156]:
+                - generic [ref=e157]: Базовий
+              - cell "Активний" [ref=e158]:
+                - generic [ref=e159]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e160]:
+                - generic [ref=e161]:
+                  - link "Редагувати користувача" [ref=e162] [cursor=pointer]:
+                    - /url: /admin/users/329452ed-df78-4f76-afa5-becd1825b998
+                    - button "Редагувати користувача" [ref=e163]
+                  - button "Видалити користувача" [ref=e164]
+            - row "Оксана Корнїйчук Afanasuuya_Bandera46@e-mail.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e165]:
+              - cell "Оксана Корнїйчук Afanasuuya_Bandera46@e-mail.ua" [ref=e166]:
+                - generic [ref=e167]:
+                  - paragraph [ref=e168]: Оксана Корнїйчук
+                  - paragraph [ref=e169]: Afanasuuya_Bandera46@e-mail.ua
+              - cell "Базовий" [ref=e170]:
+                - generic [ref=e171]: Базовий
+              - cell "Активний" [ref=e172]:
+                - generic [ref=e173]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e174]:
+                - generic [ref=e175]:
+                  - link "Редагувати користувача" [ref=e176] [cursor=pointer]:
+                    - /url: /admin/users/a9873c5b-2518-4b9b-934a-9f48420d7654
+                    - button "Редагувати користувача" [ref=e177]
+                  - button "Видалити користувача" [ref=e178]
+            - row "Олексій Лученко Borimir45@gmail.com Базовий Активний Редагувати користувача Видалити користувача" [ref=e179]:
+              - cell "Олексій Лученко Borimir45@gmail.com" [ref=e180]:
+                - generic [ref=e181]:
+                  - paragraph [ref=e182]: Олексій Лученко
+                  - paragraph [ref=e183]: Borimir45@gmail.com
+              - cell "Базовий" [ref=e184]:
+                - generic [ref=e185]: Базовий
+              - cell "Активний" [ref=e186]:
+                - generic [ref=e187]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e188]:
+                - generic [ref=e189]:
+                  - link "Редагувати користувача" [ref=e190] [cursor=pointer]:
+                    - /url: /admin/users/d403987a-085c-4405-9686-0d29cd0013b2
+                    - button "Редагувати користувача" [ref=e191]
+                  - button "Видалити користувача" [ref=e192]
+            - row "Ратибор Городоцький Gelena91@e-mail.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e193]:
+              - cell "Ратибор Городоцький Gelena91@e-mail.ua" [ref=e194]:
+                - generic [ref=e195]:
+                  - paragraph [ref=e196]: Ратибор Городоцький
+                  - paragraph [ref=e197]: Gelena91@e-mail.ua
+              - cell "Базовий" [ref=e198]:
+                - generic [ref=e199]: Базовий
+              - cell "Активний" [ref=e200]:
+                - generic [ref=e201]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e202]:
+                - generic [ref=e203]:
+                  - link "Редагувати користувача" [ref=e204] [cursor=pointer]:
+                    - /url: /admin/users/1fb142a8-6c06-4b58-9a7d-90bf96de1484
+                    - button "Редагувати користувача" [ref=e205]
+                  - button "Видалити користувача" [ref=e206]
+            - row "Аполлінарія Петик Olesuk_Osadko@ex.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e207]:
+              - cell "Аполлінарія Петик Olesuk_Osadko@ex.ua" [ref=e208]:
+                - generic [ref=e209]:
+                  - paragraph [ref=e210]: Аполлінарія Петик
+                  - paragraph [ref=e211]: Olesuk_Osadko@ex.ua
+              - cell "Базовий" [ref=e212]:
+                - generic [ref=e213]: Базовий
+              - cell "Активний" [ref=e214]:
+                - generic [ref=e215]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e216]:
+                - generic [ref=e217]:
+                  - link "Редагувати користувача" [ref=e218] [cursor=pointer]:
+                    - /url: /admin/users/f7393d5e-1ba2-4412-a2ce-6e39a978b896
+                    - button "Редагувати користувача" [ref=e219]
+                  - button "Видалити користувача" [ref=e220]
+            - row "Архип Стигайло Artem_smvanishin41@ukr.net Базовий Активний Редагувати користувача Видалити користувача" [ref=e221]:
+              - cell "Архип Стигайло Artem_smvanishin41@ukr.net" [ref=e222]:
+                - generic [ref=e223]:
+                  - paragraph [ref=e224]: Архип Стигайло
+                  - paragraph [ref=e225]: Artem_smvanishin41@ukr.net
+              - cell "Базовий" [ref=e226]:
+                - generic [ref=e227]: Базовий
+              - cell "Активний" [ref=e228]:
+                - generic [ref=e229]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e230]:
+                - generic [ref=e231]:
+                  - link "Редагувати користувача" [ref=e232] [cursor=pointer]:
+                    - /url: /admin/users/89edff26-ad01-4988-b2fe-93cd72342b1a
+                    - button "Редагувати користувача" [ref=e233]
+                  - button "Видалити користувача" [ref=e234]
+            - row "Тетяна Петрина Anfuusa.Shindarei@ex.ua Базовий Активний Редагувати користувача Видалити користувача" [ref=e235]:
+              - cell "Тетяна Петрина Anfuusa.Shindarei@ex.ua" [ref=e236]:
+                - generic [ref=e237]:
+                  - paragraph [ref=e238]: Тетяна Петрина
+                  - paragraph [ref=e239]: Anfuusa.Shindarei@ex.ua
+              - cell "Базовий" [ref=e240]:
+                - generic [ref=e241]: Базовий
+              - cell "Активний" [ref=e242]:
+                - generic [ref=e243]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e244]:
+                - generic [ref=e245]:
+                  - link "Редагувати користувача" [ref=e246] [cursor=pointer]:
+                    - /url: /admin/users/f79e3e6f-4d6d-4507-a428-2ff3e8ea9717
+                    - button "Редагувати користувача" [ref=e247]
+                  - button "Видалити користувача" [ref=e248]
+            - row "Ксенія Негода Nestor_Kornuuichuk@meta.ua Базовий Неактивний Редагувати користувача Видалити користувача" [ref=e249]:
+              - cell "Ксенія Негода Nestor_Kornuuichuk@meta.ua" [ref=e250]:
+                - generic [ref=e251]:
+                  - paragraph [ref=e252]: Ксенія Негода
+                  - paragraph [ref=e253]: Nestor_Kornuuichuk@meta.ua
+              - cell "Базовий" [ref=e254]:
+                - generic [ref=e255]: Базовий
+              - cell "Неактивний" [ref=e256]:
+                - generic [ref=e257]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e258]:
+                - generic [ref=e259]:
+                  - link "Редагувати користувача" [ref=e260] [cursor=pointer]:
+                    - /url: /admin/users/c713e5ff-182f-4896-93a0-f6983168432e
+                    - button "Редагувати користувача" [ref=e261]
+                  - button "Видалити користувача" [ref=e262]
+            - row "Катерина Люта Karuuna56@yandex.ua Базовий Неактивний Редагувати користувача Видалити користувача" [ref=e263]:
+              - cell "Катерина Люта Karuuna56@yandex.ua" [ref=e264]:
+                - generic [ref=e265]:
+                  - paragraph [ref=e266]: Катерина Люта
+                  - paragraph [ref=e267]: Karuuna56@yandex.ua
+              - cell "Базовий" [ref=e268]:
+                - generic [ref=e269]: Базовий
+              - cell "Неактивний" [ref=e270]:
+                - generic [ref=e271]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e272]:
+                - generic [ref=e273]:
+                  - link "Редагувати користувача" [ref=e274] [cursor=pointer]:
+                    - /url: /admin/users/96bcb17d-1ac4-4b3e-b31c-e8fbf79ee6ed
+                    - button "Редагувати користувача" [ref=e275]
+                  - button "Видалити користувача" [ref=e276]
+            - row "Всеволод Борочко Zoreslava_Ponomaruuv@gmail.com Базовий Активний Редагувати користувача Видалити користувача" [ref=e277]:
+              - cell "Всеволод Борочко Zoreslava_Ponomaruuv@gmail.com" [ref=e278]:
+                - generic [ref=e279]:
+                  - paragraph [ref=e280]: Всеволод Борочко
+                  - paragraph [ref=e281]: Zoreslava_Ponomaruuv@gmail.com
+              - cell "Базовий" [ref=e282]:
+                - generic [ref=e283]: Базовий
+              - cell "Активний" [ref=e284]:
+                - generic [ref=e285]: Активний
+              - cell "Редагувати користувача Видалити користувача" [ref=e286]:
+                - generic [ref=e287]:
+                  - link "Редагувати користувача" [ref=e288] [cursor=pointer]:
+                    - /url: /admin/users/520b1567-c2d1-4849-9fe5-e0ac8a187202
+                    - button "Редагувати користувача" [ref=e289]
+                  - button "Видалити користувача" [ref=e290]
+            - row "Мстислава Боровська Rauusa_Romanuuv96@meta.ua Базовий Неактивний Редагувати користувача Видалити користувача" [ref=e291]:
+              - cell "Мстислава Боровська Rauusa_Romanuuv96@meta.ua" [ref=e292]:
+                - generic [ref=e293]:
+                  - paragraph [ref=e294]: Мстислава Боровська
+                  - paragraph [ref=e295]: Rauusa_Romanuuv96@meta.ua
+              - cell "Базовий" [ref=e296]:
+                - generic [ref=e297]: Базовий
+              - cell "Неактивний" [ref=e298]:
+                - generic [ref=e299]: Неактивний
+              - cell "Редагувати користувача Видалити користувача" [ref=e300]:
+                - generic [ref=e301]:
+                  - link "Редагувати користувача" [ref=e302] [cursor=pointer]:
+                    - /url: /admin/users/feaf4c19-9338-4bed-990d-8fabdbe7f717
+                    - button "Редагувати користувача" [ref=e303]
+                  - button "Видалити користувача" [ref=e304]
+        - generic [ref=e305]:
+          - button "Previous" [disabled]
+          - generic [ref=e306]: 1 / 2
+          - button "Next" [ref=e307]
+```
