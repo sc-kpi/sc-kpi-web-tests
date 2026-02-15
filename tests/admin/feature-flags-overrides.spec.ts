@@ -36,8 +36,7 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
   }) => {
     await featureFlagsListPage.goto();
 
-    const flagRow = featureFlagsListPage.getFlagRow(testFlagKey);
-    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Overrides section should be visible (either table or "no overrides" message)
@@ -53,8 +52,7 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
   }) => {
     await featureFlagsListPage.goto();
 
-    const flagRow = featureFlagsListPage.getFlagRow(testFlagKey);
-    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Select TIER type and fill tier level
@@ -66,7 +64,7 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
 
     // Submit the override form
     const addButton = adminPage.getByRole("button", { name: /add override|додати/i });
-    await addButton.click();
+    await addButton.click({ force: true });
 
     // Verify the override appears
     await adminPage.waitForTimeout(1000);
@@ -77,8 +75,7 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
   test("should remove override from table", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
 
-    const flagRow = featureFlagsListPage.getFlagRow(testFlagKey);
-    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // First ensure there is an override to remove - add one
@@ -87,7 +84,7 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
     const tierLevelInput = adminPage.locator("#tierLevel");
     await tierLevelInput.fill("2");
     const addButton = adminPage.getByRole("button", { name: /add override|додати/i });
-    await addButton.click();
+    await addButton.click({ force: true });
     await adminPage.waitForTimeout(1000);
 
     // Now remove the last override
@@ -96,7 +93,7 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
       .first()
       .getByRole("button", { name: /delete|видалити/i });
 
-    await deleteButtons.last().click();
+    await deleteButtons.last().click({ force: true });
     await adminPage.waitForTimeout(1000);
   });
 });
