@@ -51,8 +51,8 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
 
     // Verify the override appears
     await adminPage.waitForTimeout(1000);
-    await expect(adminPage.getByText("TIER")).toBeVisible();
-    await expect(adminPage.getByText("Tier 3")).toBeVisible();
+    await expect(adminPage.getByRole("cell", { name: "TIER" }).first()).toBeVisible();
+    await expect(adminPage.getByRole("cell", { name: "Tier 3" }).first()).toBeVisible();
   });
 
   test("should remove override from table", async ({ featureFlagsListPage, adminPage }) => {

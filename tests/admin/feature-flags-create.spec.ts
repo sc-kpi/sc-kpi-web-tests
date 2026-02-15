@@ -14,7 +14,7 @@ test.describe("Feature flag creation", { tag: [Tag.REGRESSION] }, () => {
   }) => {
     await featureFlagCreatePage.goto();
 
-    const flagKey = `test.e2e.${faker.string.alpha(8)}`;
+    const flagKey = `test.e2e.${faker.string.alpha({ length: 8, casing: "lower" })}`;
     await featureFlagCreatePage.fillForm({
       key: flagKey,
       name: `E2E Test Flag ${faker.lorem.word()}`,
@@ -49,7 +49,7 @@ test.describe("Feature flag creation", { tag: [Tag.REGRESSION] }, () => {
   }) => {
     await featureFlagCreatePage.goto();
 
-    const flagKey = `test.min.${faker.string.alpha(8)}`;
+    const flagKey = `test.min.${faker.string.alpha({ length: 8, casing: "lower" })}`;
     await featureFlagCreatePage.keyInput.fill(flagKey);
     await featureFlagCreatePage.nameInput.fill("Minimal Flag");
 
