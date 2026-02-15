@@ -25,6 +25,7 @@ jobs:
       environment: ci
       base_url: ""
       workers: "4"
+      shards: "4"
       rerun_failed: false
       previous_run_id: ""
       caller_event: ${{ github.event_name }}

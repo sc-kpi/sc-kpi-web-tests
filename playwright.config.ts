@@ -10,23 +10,40 @@ export default defineConfig({
   workers: Config.execution().workers,
   timeout: Config.timeout(),
 
-  reporter: [
-    ["list"],
-    ["html", { open: "never" }],
-    [
-      "allure-playwright",
-      {
-        resultsDir: "allure-results",
-        environmentInfo: {
-          BASE_URL: Config.baseUrl(),
-          TEST_ENV: process.env.TEST_ENV ?? "default",
-          AUTH_ENABLED: String(Config.isAuthEnabled()),
-          NODE_VERSION: process.version,
-        },
-      },
-    ],
-    ["junit", { outputFile: "test-results/junit.xml" }],
-  ],
+  reporter: process.env.CI
+    ? [
+        ["blob"],
+        [
+          "allure-playwright",
+          {
+            resultsDir: "allure-results",
+            environmentInfo: {
+              BASE_URL: Config.baseUrl(),
+              TEST_ENV: process.env.TEST_ENV ?? "default",
+              AUTH_ENABLED: String(Config.isAuthEnabled()),
+              NODE_VERSION: process.version,
+            },
+          },
+        ],
+        ["junit", { outputFile: "test-results/junit.xml" }],
+      ]
+    : [
+        ["list"],
+        ["html", { open: "never" }],
+        [
+          "allure-playwright",
+          {
+            resultsDir: "allure-results",
+            environmentInfo: {
+              BASE_URL: Config.baseUrl(),
+              TEST_ENV: process.env.TEST_ENV ?? "default",
+              AUTH_ENABLED: String(Config.isAuthEnabled()),
+              NODE_VERSION: process.version,
+            },
+          },
+        ],
+        ["junit", { outputFile: "test-results/junit.xml" }],
+      ],
 
   use: {
     baseURL: Config.baseUrl(),
