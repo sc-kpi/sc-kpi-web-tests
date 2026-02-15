@@ -2,12 +2,12 @@ import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
 import { expect, test } from "../../src/fixtures/index.js";
 
-test.describe("Feature flag audit log", { tag: [Tag.REGRESSION] }, () => {
+test.describe("Feature flag audit log (centralized)", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
     test.skip(!Config.isAuthEnabled(), "Admin tests require authentication");
   });
 
-  test("should display audit log section on detail page", async ({
+  test("should have audit log link on feature flag detail page", async ({
     featureFlagsListPage,
     adminPage,
   }) => {
@@ -19,36 +19,14 @@ test.describe("Feature flag audit log", { tag: [Tag.REGRESSION] }, () => {
     await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
-    // Audit log heading should be visible
-    const auditHeading = adminPage.getByRole("heading", {
-      name: /audit log|журнал змін/i,
+    // Detail page should have a link to centralized audit logs
+    const auditLink = adminPage.getByRole("link", {
+      name: /view audit|переглянути журнал/i,
     });
-    await expect(auditHeading).toBeVisible();
+    await expect(auditLink).toBeVisible();
   });
 
-  test("should show toggle action in audit log after toggling", async ({
-    featureFlagsListPage,
-    adminPage,
-  }) => {
-    await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to toggle");
-
-    // Toggle a flag from the list first
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    const toggleButton = firstFlagRow.getByRole("button", { name: /on|off/i });
-    await toggleButton.click();
-    await featureFlagsListPage.page.waitForTimeout(1000);
-
-    // Navigate to detail page
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
-    await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
-
-    // Audit log should contain a TOGGLED entry
-    await expect(adminPage.getByRole("cell", { name: "TOGGLED" }).first()).toBeVisible();
-  });
-
-  test("should show audit log entries with correct columns", async ({
+  test("should navigate to centralized audit page filtered by feature flag", async ({
     featureFlagsListPage,
     adminPage,
   }) => {
@@ -60,8 +38,12 @@ test.describe("Feature flag audit log", { tag: [Tag.REGRESSION] }, () => {
     await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
-    // Verify audit log table headers are present
-    const auditTable = adminPage.getByRole("table").last();
-    await expect(auditTable.getByText(/action|дія/i).first()).toBeVisible();
+    const auditLink = adminPage.getByRole("link", {
+      name: /view audit|переглянути журнал/i,
+    });
+    await auditLink.click();
+
+    await adminPage.waitForURL(/\/admin\/audit-logs\?/, { timeout: 15000 });
+    expect(adminPage.url()).toContain("entityType=FEATURE_FLAG");
   });
 });
