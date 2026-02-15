@@ -21,7 +21,7 @@ test.describe("Feature flag audit log (centralized)", { tag: [Tag.REGRESSION] },
 
     // Detail page should have a link to centralized audit logs
     const auditLink = adminPage.getByRole("link", {
-      name: /view audit|переглянути журнал/i,
+      name: /audit log|журнал змін/i,
     });
     await expect(auditLink).toBeVisible();
   });
@@ -39,7 +39,7 @@ test.describe("Feature flag audit log (centralized)", { tag: [Tag.REGRESSION] },
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     const auditLink = adminPage.getByRole("link", {
-      name: /view audit|переглянути журнал/i,
+      name: /audit log|журнал змін/i,
     });
     await auditLink.click();
 
