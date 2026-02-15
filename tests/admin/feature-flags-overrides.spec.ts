@@ -12,7 +12,7 @@ test.beforeAll(async () => {
   const token = await AuthApiHelper.getAdminToken();
   flagHelper = new FeatureFlagHelper(token);
 
-  testFlagKey = `e2e-overrides-${Date.now()}`;
+  testFlagKey = `e2e-overrides-${crypto.randomUUID().slice(0, 8)}`;
   await flagHelper.createFlag({
     key: testFlagKey,
     name: `E2E Overrides ${TestDataFactory.randomName()}`,

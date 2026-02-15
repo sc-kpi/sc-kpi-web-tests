@@ -12,9 +12,10 @@ test.beforeAll(async () => {
 
   // Create 10 flags and toggle each twice to generate 30+ audit entries
   // (10 creates + 20 toggles = 30 entries, well over the 20 needed for pagination)
+  const uid = crypto.randomUUID().slice(0, 8);
   for (let i = 0; i < 10; i++) {
     const flag = await flagHelper.createFlag({
-      key: `e2e-audit-log-${Date.now()}-${i}`,
+      key: `e2e-audit-log-${uid}-${i}`,
       name: `E2E Audit Log ${i}`,
       enabled: false,
       rolloutPercentage: 100,
