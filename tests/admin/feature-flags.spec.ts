@@ -13,8 +13,9 @@ test.beforeAll(async () => {
   flagHelper = new FeatureFlagHelper(token);
 
   testFlagKeys = [];
+  const uid = crypto.randomUUID().slice(0, 8);
   for (let i = 0; i < 3; i++) {
-    const key = `e2e-flags-${Date.now()}-${i}`;
+    const key = `e2e-flags-${uid}-${i}`;
     await flagHelper.createFlag({
       key,
       name: `E2E Flag ${TestDataFactory.randomName()}`,
