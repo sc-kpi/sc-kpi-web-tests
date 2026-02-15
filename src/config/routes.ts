@@ -8,6 +8,7 @@ export const Route = {
   DOCUMENTS: "/documents",
   PROFILE: "/profile",
   ADMIN: "/admin",
+  ADMIN_FEATURE_FLAGS: "/admin/feature-flags",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
 } as const;

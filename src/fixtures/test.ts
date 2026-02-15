@@ -1,6 +1,9 @@
 import { type BrowserContext, test as base, type Page } from "@playwright/test";
 import { ADMIN_STORAGE_STATE, BASIC_STORAGE_STATE } from "../auth/storage-state.js";
 import { Config } from "../config/config.js";
+import { FeatureFlagCreatePage } from "../pages/admin/feature-flag-create.page.js";
+import { FeatureFlagDetailPage } from "../pages/admin/feature-flag-detail.page.js";
+import { FeatureFlagsListPage } from "../pages/admin/feature-flags-list.page.js";
 import { UserCreatePage } from "../pages/admin/user-create.page.js";
 import { UserDetailPage } from "../pages/admin/user-detail.page.js";
 import { UsersListPage } from "../pages/admin/users-list.page.js";
@@ -50,6 +53,9 @@ interface AdminPageFixtures {
   usersListPage: UsersListPage;
   userDetailPage: UserDetailPage;
   userCreatePage: UserCreatePage;
+  featureFlagsListPage: FeatureFlagsListPage;
+  featureFlagDetailPage: FeatureFlagDetailPage;
+  featureFlagCreatePage: FeatureFlagCreatePage;
 }
 
 interface AuthFixtures {
@@ -115,6 +121,18 @@ export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures
 
   userCreatePage: async ({ adminPage }, use) => {
     await use(new UserCreatePage(adminPage));
+  },
+
+  featureFlagsListPage: async ({ adminPage }, use) => {
+    await use(new FeatureFlagsListPage(adminPage));
+  },
+
+  featureFlagDetailPage: async ({ adminPage }, use) => {
+    await use(new FeatureFlagDetailPage(adminPage));
+  },
+
+  featureFlagCreatePage: async ({ adminPage }, use) => {
+    await use(new FeatureFlagCreatePage(adminPage));
   },
 
   authenticatedContext: async ({ browser }, use) => {
