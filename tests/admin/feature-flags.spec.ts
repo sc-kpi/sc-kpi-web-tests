@@ -1,6 +1,33 @@
 import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
+import { TestDataFactory } from "../../src/data/test-data-factory.js";
 import { expect, test } from "../../src/fixtures/index.js";
+import { AuthApiHelper } from "../../src/helpers/auth-api.helper.js";
+import { FeatureFlagHelper } from "../../src/helpers/feature-flag.helper.js";
+
+let flagHelper: FeatureFlagHelper;
+let testFlagKeys: string[];
+
+test.beforeAll(async () => {
+  const token = await AuthApiHelper.getAdminToken();
+  flagHelper = new FeatureFlagHelper(token);
+
+  testFlagKeys = [];
+  for (let i = 0; i < 3; i++) {
+    const key = `e2e-flags-${Date.now()}-${i}`;
+    await flagHelper.createFlag({
+      key,
+      name: `E2E Flag ${TestDataFactory.randomName()}`,
+      enabled: false,
+      rolloutPercentage: 100,
+    });
+    testFlagKeys.push(key);
+  }
+});
+
+test.afterAll(async () => {
+  await flagHelper.cleanup();
+});
 
 test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
@@ -33,11 +60,9 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should navigate to flag detail from list", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to edit");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[0]);
+    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     await expect(adminPage.locator("#name")).toBeVisible();
@@ -45,11 +70,9 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should toggle flag from list", async ({ featureFlagsListPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to toggle");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    const toggleButton = firstFlagRow.getByRole("button", { name: /on|off/i });
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[0]);
+    const toggleButton = flagRow.getByRole("button", { name: /on|off/i });
     const initialText = await toggleButton.textContent();
     await toggleButton.click();
 
@@ -58,11 +81,9 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should update flag details", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to edit");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[1]);
+    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     const nameInput = adminPage.locator("#name");
@@ -77,20 +98,15 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should delete flag from list", async ({ featureFlagsListPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount < 2, "Need at least 2 flags to safely delete one");
 
     featureFlagsListPage.page.on("dialog", (dialog) => dialog.accept());
 
-    const lastFlagRow = featureFlagsListPage.table.getByRole("row").nth(flagCount);
-    // Capture the key of the flag being deleted
-    const flagKey = await lastFlagRow.locator("td").first().textContent();
-
-    await lastFlagRow.getByRole("button", { name: /delete|видалити/i }).click();
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[2]);
+    await flagRow.getByRole("button", { name: /delete|видалити/i }).click();
 
     // Wait for the deleted flag's key to disappear from the table
     await expect(
-      featureFlagsListPage.table.getByRole("cell", { name: flagKey ?? "" }),
+      featureFlagsListPage.table.getByRole("cell", { name: testFlagKeys[2] }),
     ).not.toBeVisible({ timeout: 10000 });
   });
 

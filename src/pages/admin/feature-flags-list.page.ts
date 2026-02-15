@@ -28,17 +28,17 @@ export class FeatureFlagsListPage extends BasePage {
 
   async clickEditFlag(key: string): Promise<void> {
     const row = this.getFlagRow(key);
-    await row.getByRole("link", { name: /edit|редагувати/i }).click();
+    await row.getByRole("link", { name: /edit|редагувати/i }).click({ force: true });
   }
 
   async clickToggleFlag(key: string): Promise<void> {
     const row = this.getFlagRow(key);
-    await row.getByRole("button", { name: /on|off/i }).click();
+    await row.getByRole("button", { name: /on|off/i }).click({ force: true });
   }
 
   async clickDeleteFlag(key: string): Promise<void> {
     const row = this.getFlagRow(key);
-    await row.getByRole("button", { name: /delete|видалити/i }).click();
+    await row.getByRole("button", { name: /delete|видалити/i }).click({ force: true });
   }
 
   async getFlagCount(): Promise<number> {

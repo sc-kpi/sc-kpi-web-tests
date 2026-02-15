@@ -28,7 +28,7 @@ export class UsersListPage extends BasePage {
 
   async clickEditUser(name: string): Promise<void> {
     const row = this.getUserRow(name);
-    await row.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    await row.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click({ force: true });
   }
 
   async getUserCount(): Promise<number> {

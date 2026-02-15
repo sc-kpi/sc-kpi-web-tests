@@ -1,6 +1,29 @@
 import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
+import { TestDataFactory } from "../../src/data/test-data-factory.js";
 import { expect, test } from "../../src/fixtures/index.js";
+import { AuthApiHelper } from "../../src/helpers/auth-api.helper.js";
+import { FeatureFlagHelper } from "../../src/helpers/feature-flag.helper.js";
+
+let flagHelper: FeatureFlagHelper;
+let testFlagKey: string;
+
+test.beforeAll(async () => {
+  const token = await AuthApiHelper.getAdminToken();
+  flagHelper = new FeatureFlagHelper(token);
+
+  testFlagKey = `e2e-overrides-${Date.now()}`;
+  await flagHelper.createFlag({
+    key: testFlagKey,
+    name: `E2E Overrides ${TestDataFactory.randomName()}`,
+    enabled: false,
+    rolloutPercentage: 100,
+  });
+});
+
+test.afterAll(async () => {
+  await flagHelper.cleanup();
+});
 
 test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
@@ -12,11 +35,9 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
     adminPage,
   }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKey);
+    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Overrides section should be visible (either table or "no overrides" message)
@@ -31,11 +52,9 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
     adminPage,
   }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKey);
+    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Select TIER type and fill tier level
@@ -57,11 +76,9 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
 
   test("should remove override from table", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    const flagRow = featureFlagsListPage.getFlagRow(testFlagKey);
+    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // First ensure there is an override to remove - add one
@@ -78,9 +95,6 @@ test.describe("Feature flag overrides", { tag: [Tag.REGRESSION] }, () => {
       .getByRole("table")
       .first()
       .getByRole("button", { name: /delete|видалити/i });
-
-    const deleteCount = await deleteButtons.count();
-    test.skip(deleteCount === 0, "No overrides to remove");
 
     await deleteButtons.last().click();
     await adminPage.waitForTimeout(1000);
