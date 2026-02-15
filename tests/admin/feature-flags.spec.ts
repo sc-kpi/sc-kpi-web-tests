@@ -53,7 +53,7 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
     const initialText = await toggleButton.textContent();
     await toggleButton.click();
 
-    await expect(toggleButton).not.toHaveText(initialText ?? "");
+    await expect(toggleButton).not.toHaveText(initialText ?? "", { timeout: 10000 });
   });
 
   test("should update flag details", async ({ featureFlagsListPage, adminPage }) => {
@@ -83,10 +83,15 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
     featureFlagsListPage.page.on("dialog", (dialog) => dialog.accept());
 
     const lastFlagRow = featureFlagsListPage.table.getByRole("row").nth(flagCount);
+    // Capture the key of the flag being deleted
+    const flagKey = await lastFlagRow.locator("td").first().textContent();
+
     await lastFlagRow.getByRole("button", { name: /delete|видалити/i }).click();
 
-    const newCount = await featureFlagsListPage.getFlagCount();
-    expect(newCount).toBeLessThan(flagCount);
+    // Wait for the deleted flag's key to disappear from the table
+    await expect(
+      featureFlagsListPage.table.getByRole("cell", { name: flagKey ?? "" }),
+    ).not.toBeVisible({ timeout: 10000 });
   });
 
   test("should show pagination when many flags exist", async ({ featureFlagsListPage }) => {

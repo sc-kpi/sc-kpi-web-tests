@@ -45,7 +45,7 @@ test.describe("Feature flag audit log", { tag: [Tag.REGRESSION] }, () => {
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Audit log should contain a TOGGLED entry
-    await expect(adminPage.getByText("TOGGLED")).toBeVisible();
+    await expect(adminPage.getByRole("cell", { name: "TOGGLED" }).first()).toBeVisible();
   });
 
   test("should show audit log entries with correct columns", async ({
