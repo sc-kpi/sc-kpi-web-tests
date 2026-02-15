@@ -2,6 +2,27 @@ import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
 import { TestDataFactory } from "../../src/data/test-data-factory.js";
 import { expect, test } from "../../src/fixtures/index.js";
+import { AuthApiHelper } from "../../src/helpers/auth-api.helper.js";
+import { UserHelper } from "../../src/helpers/user.helper.js";
+
+let userHelper: UserHelper;
+let testUserNames: string[];
+
+test.beforeAll(async () => {
+  const token = await AuthApiHelper.getAdminToken();
+  userHelper = new UserHelper(token);
+
+  testUserNames = [];
+  for (let i = 0; i < 2; i++) {
+    const data = TestDataFactory.validCreateUserData();
+    await userHelper.createUser(data);
+    testUserNames.push(`${data.firstName} ${data.lastName}`);
+  }
+});
+
+test.afterAll(async () => {
+  await userHelper.cleanup();
+});
 
 test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
@@ -16,11 +37,8 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should navigate to user detail from list", async ({ usersListPage, adminPage }) => {
     await usersListPage.goto();
-    const userCount = await usersListPage.getUserCount();
-    test.skip(userCount === 0, "No users available to edit");
 
-    const firstUserRow = usersListPage.table.getByRole("row").nth(1);
-    await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    await usersListPage.clickEditUser(testUserNames[0]);
     await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
 
     // Verify detail page loaded with expected elements
@@ -32,12 +50,9 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     const updateData = TestDataFactory.validUserUpdateData();
 
     await usersListPage.goto();
-    const userCount = await usersListPage.getUserCount();
-    test.skip(userCount === 0, "No users available to edit");
 
-    // Click edit on the first user row
-    const firstUserRow = usersListPage.table.getByRole("row").nth(1);
-    await firstUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    // Click edit on the first test user
+    await usersListPage.clickEditUser(testUserNames[0]);
     await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
     await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
@@ -55,6 +70,9 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
     // Verify the update persisted
     await expect(firstNameInput).toHaveValue(updateData.firstName);
     await expect(lastNameInput).toHaveValue(updateData.lastName);
+
+    // Update the tracked name so later tests can still find this user
+    testUserNames[0] = `${updateData.firstName} ${updateData.lastName}`;
   });
 
   test("should create new user via admin form", async ({ userCreatePage, adminPage }) => {
@@ -81,12 +99,9 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should change user tier", async ({ usersListPage, adminPage }) => {
     await usersListPage.goto();
-    const userCount = await usersListPage.getUserCount();
-    test.skip(userCount < 2, "Need non-admin user to test tier change");
 
-    // Click edit on a non-admin user (nth(2)) to avoid demoting the admin
-    const targetUserRow = usersListPage.table.getByRole("row").nth(2);
-    await targetUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    // Use the second test user (non-admin) to avoid demoting the admin
+    await usersListPage.clickEditUser(testUserNames[1]);
     await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
     await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
@@ -100,12 +115,9 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should toggle user status", async ({ usersListPage, adminPage }) => {
     await usersListPage.goto();
-    const userCount = await usersListPage.getUserCount();
-    test.skip(userCount < 2, "Need non-admin user to test status toggle");
 
-    // Click edit on a non-admin user (nth(2)) to avoid toggling admin status
-    const targetUserRow = usersListPage.table.getByRole("row").nth(2);
-    await targetUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    // Use the second test user (non-admin) to avoid toggling admin status
+    await usersListPage.clickEditUser(testUserNames[1]);
     await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
     await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 
@@ -124,11 +136,8 @@ test.describe("User management", { tag: [Tag.REGRESSION] }, () => {
 
   test("should delete user from detail page", async ({ usersListPage, adminPage }) => {
     await usersListPage.goto();
-    const userCount = await usersListPage.getUserCount();
-    test.skip(userCount < 2, "Need at least 2 users to safely delete one");
 
-    const lastUserRow = usersListPage.table.getByRole("row").nth(userCount);
-    await lastUserRow.getByRole("link", { name: /edit|редагувати|details|деталі/i }).click();
+    await usersListPage.clickEditUser(testUserNames[1]);
     await adminPage.waitForURL(/\/admin\/users\/[^/]+$/, { timeout: 15000 });
     await expect(adminPage.getByLabel(/first name|ім'я/i)).toBeVisible();
 

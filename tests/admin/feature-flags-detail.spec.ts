@@ -1,6 +1,30 @@
 import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
+import { TestDataFactory } from "../../src/data/test-data-factory.js";
 import { expect, test } from "../../src/fixtures/index.js";
+import { AuthApiHelper } from "../../src/helpers/auth-api.helper.js";
+import { FeatureFlagHelper } from "../../src/helpers/feature-flag.helper.js";
+
+let flagHelper: FeatureFlagHelper;
+let testFlagKey: string;
+
+test.beforeAll(async () => {
+  const token = await AuthApiHelper.getAdminToken();
+  flagHelper = new FeatureFlagHelper(token);
+
+  testFlagKey = `e2e-detail-${Date.now()}`;
+  await flagHelper.createFlag({
+    key: testFlagKey,
+    name: `E2E Detail ${TestDataFactory.randomName()}`,
+    description: "Created by E2E test",
+    enabled: false,
+    rolloutPercentage: 100,
+  });
+});
+
+test.afterAll(async () => {
+  await flagHelper.cleanup();
+});
 
 test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
@@ -12,11 +36,8 @@ test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
     adminPage,
   }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to view");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Verify form fields are present
@@ -32,11 +53,8 @@ test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
     adminPage,
   }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to edit");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     const nameInput = adminPage.locator("#name");
@@ -58,11 +76,8 @@ test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
 
   test("should update rollout percentage", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to edit");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     const rolloutInput = adminPage.locator("#rolloutPercentage");
@@ -84,11 +99,8 @@ test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
     adminPage,
   }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to view");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     await adminPage.getByRole("button", { name: /back|назад/i }).click();
@@ -97,11 +109,8 @@ test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
 
   test("should show key as read-only on edit page", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to view");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     // Key field should be disabled
@@ -114,11 +123,8 @@ test.describe("Feature flag detail/edit", { tag: [Tag.REGRESSION] }, () => {
     adminPage,
   }) => {
     await featureFlagsListPage.goto();
-    const flagCount = await featureFlagsListPage.getFlagCount();
-    test.skip(flagCount === 0, "No feature flags available to edit");
 
-    const firstFlagRow = featureFlagsListPage.table.getByRole("row").nth(1);
-    await firstFlagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKey);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     const descInput = adminPage.locator("#description");

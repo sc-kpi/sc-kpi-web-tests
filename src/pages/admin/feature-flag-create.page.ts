@@ -52,11 +52,11 @@ export class FeatureFlagCreatePage extends BasePage {
   }
 
   async submit(): Promise<void> {
-    await this.submitButton.click();
+    await this.submitButton.click({ force: true });
   }
 
   async cancel(): Promise<void> {
-    await this.cancelButton.click();
+    await this.cancelButton.click({ force: true });
   }
 
   async goto(): Promise<void> {

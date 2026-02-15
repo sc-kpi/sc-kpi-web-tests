@@ -1,6 +1,32 @@
 import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
 import { expect, test } from "../../src/fixtures/index.js";
+import { AuthApiHelper } from "../../src/helpers/auth-api.helper.js";
+import { FeatureFlagHelper } from "../../src/helpers/feature-flag.helper.js";
+
+let flagHelper: FeatureFlagHelper;
+
+test.beforeAll(async () => {
+  const token = await AuthApiHelper.getAdminToken();
+  flagHelper = new FeatureFlagHelper(token);
+
+  // Create 10 flags and toggle each twice to generate 30+ audit entries
+  // (10 creates + 20 toggles = 30 entries, well over the 20 needed for pagination)
+  for (let i = 0; i < 10; i++) {
+    const flag = await flagHelper.createFlag({
+      key: `e2e-audit-log-${Date.now()}-${i}`,
+      name: `E2E Audit Log ${i}`,
+      enabled: false,
+      rolloutPercentage: 100,
+    });
+    await flagHelper.toggleFlag(flag.id, { enabled: true });
+    await flagHelper.toggleFlag(flag.id, { enabled: false });
+  }
+});
+
+test.afterAll(async () => {
+  await flagHelper.cleanup();
+});
 
 test.describe("Audit logs", { tag: [Tag.REGRESSION] }, () => {
   test.beforeEach(async () => {
@@ -47,8 +73,6 @@ test.describe("Audit logs", { tag: [Tag.REGRESSION] }, () => {
 
   test("should show pagination controls when multiple pages", async ({ auditLogsPage }) => {
     await auditLogsPage.goto();
-    const rowCount = await auditLogsPage.getRowCount();
-    test.skip(rowCount < 20, "Not enough audit entries to trigger pagination");
 
     await expect(auditLogsPage.previousButton).toBeVisible();
     await expect(auditLogsPage.nextButton).toBeVisible();
