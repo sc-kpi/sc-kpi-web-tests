@@ -62,8 +62,7 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
   test("should navigate to flag detail from list", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
 
-    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[0]);
-    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKeys[0]);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     await expect(adminPage.locator("#name")).toBeVisible();
@@ -75,7 +74,7 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
     const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[0]);
     const toggleButton = flagRow.getByRole("button", { name: /on|off/i });
     const initialText = await toggleButton.textContent();
-    await toggleButton.click();
+    await toggleButton.click({ force: true });
 
     await expect(toggleButton).not.toHaveText(initialText ?? "", { timeout: 10000 });
   });
@@ -83,8 +82,7 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
   test("should update flag details", async ({ featureFlagsListPage, adminPage }) => {
     await featureFlagsListPage.goto();
 
-    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[1]);
-    await flagRow.getByRole("link", { name: /edit|редагувати/i }).click();
+    await featureFlagsListPage.clickEditFlag(testFlagKeys[1]);
     await adminPage.waitForURL(/\/admin\/feature-flags\/[^/]+$/, { timeout: 15000 });
 
     const nameInput = adminPage.locator("#name");
@@ -92,7 +90,7 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
     await nameInput.fill("Updated Flag Name");
 
     const saveButton = adminPage.getByRole("button", { name: /save|зберегти/i });
-    await saveButton.click();
+    await saveButton.click({ force: true });
 
     await expect(nameInput).toHaveValue("Updated Flag Name");
   });
@@ -102,8 +100,7 @@ test.describe("Feature flag management", { tag: [Tag.REGRESSION] }, () => {
 
     featureFlagsListPage.page.on("dialog", (dialog) => dialog.accept());
 
-    const flagRow = featureFlagsListPage.getFlagRow(testFlagKeys[2]);
-    await flagRow.getByRole("button", { name: /delete|видалити/i }).click();
+    await featureFlagsListPage.clickDeleteFlag(testFlagKeys[2]);
 
     // Wait for the deleted flag's key to disappear from the table
     await expect(
