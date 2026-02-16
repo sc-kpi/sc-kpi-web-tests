@@ -1,0 +1,72 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - heading "Адміністрування" [level=2] [ref=e4]
+      - generic [ref=e5]:
+        - link "Користувачі" [ref=e6] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Функціональні прапорці" [ref=e7] [cursor=pointer]:
+          - /url: /admin/feature-flags
+        - link "Журнал аудиту" [ref=e8] [cursor=pointer]:
+          - /url: /admin/audit-logs
+        - link "Сповіщення" [ref=e9] [cursor=pointer]:
+          - /url: /admin/notifications
+    - main [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - heading "Редагувати прапорець" [level=1] [ref=e13]
+          - button "Назад до списку" [ref=e14]
+        - generic [ref=e15]:
+          - generic [ref=e16]:
+            - heading "Деталі прапорця" [level=3] [ref=e18]
+            - generic [ref=e20]:
+              - generic [ref=e21]:
+                - generic [ref=e22]: Ключ
+                - textbox "Ключ" [disabled]: e2e-detail-22161347
+              - generic [ref=e23]:
+                - generic [ref=e24]: Назва
+                - textbox "Назва" [ref=e25]: E2E Detail Злат Георгійович Мотрієнко
+              - generic [ref=e26]:
+                - generic [ref=e27]: Опис
+                - textbox "Опис" [ref=e28]: Created by E2E test
+              - generic [ref=e29]:
+                - generic [ref=e30]: Увімкнено
+                - checkbox "Увімкнено" [ref=e31]
+              - generic [ref=e32]:
+                - generic [ref=e33]: Середовище
+                - combobox "Середовище" [ref=e34]:
+                  - option "Усі середовища" [selected]
+                  - option "Development"
+                  - option "Staging"
+                  - option "Production"
+              - generic [ref=e35]:
+                - generic [ref=e36]: Розгортання %
+                - spinbutton "Розгортання %" [active] [ref=e37]: "50"
+              - button "Зберегти" [ref=e38]
+          - generic [ref=e39]:
+            - heading "Перевизначення" [level=3] [ref=e41]
+            - generic [ref=e42]:
+              - paragraph [ref=e43]: Перевизначення не налаштовані
+              - generic [ref=e44]:
+                - generic [ref=e45]:
+                  - generic [ref=e46]: Тип
+                  - combobox "Тип" [ref=e47]:
+                    - option "Tier" [selected]
+                    - option "User"
+                - generic [ref=e48]:
+                  - generic [ref=e49]: Tier Level
+                  - spinbutton "Tier Level" [ref=e50]: "1"
+                - generic [ref=e51]:
+                  - generic [ref=e52]: Увімкнено
+                  - checkbox "Увімкнено" [checked] [ref=e53]
+                - button "Додати перевизначення" [ref=e54]
+        - generic [ref=e55]:
+          - heading "Журнал змін" [level=3] [ref=e57]
+          - link "Журнал змін →" [ref=e59] [cursor=pointer]:
+            - /url: /admin/audit-logs?entityType=FEATURE_FLAG&entityId=17fdc922-43ff-4b94-a407-6421ffa2c6d8
+  - region "Notifications alt+T"
+  - alert [ref=e60]
+```
