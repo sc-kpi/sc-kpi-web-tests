@@ -10,6 +10,9 @@ export const Route = {
   ADMIN: "/admin",
   ADMIN_FEATURE_FLAGS: "/admin/feature-flags",
   ADMIN_AUDIT_LOGS: "/admin/audit-logs",
+  NOTIFICATIONS: "/notifications",
+  NOTIFICATION_PREFERENCES: "/notifications/preferences",
+  ADMIN_NOTIFICATIONS: "/admin/notifications",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
 } as const;
