@@ -5,6 +5,9 @@ import { AuditLogsPage } from "../pages/admin/audit-logs.page.js";
 import { FeatureFlagCreatePage } from "../pages/admin/feature-flag-create.page.js";
 import { FeatureFlagDetailPage } from "../pages/admin/feature-flag-detail.page.js";
 import { FeatureFlagsListPage } from "../pages/admin/feature-flags-list.page.js";
+import { RateLimitCreatePage } from "../pages/admin/rate-limit-create.page.js";
+import { RateLimitDetailPage } from "../pages/admin/rate-limit-detail.page.js";
+import { RateLimitsListPage } from "../pages/admin/rate-limits-list.page.js";
 import { UserCreatePage } from "../pages/admin/user-create.page.js";
 import { UserDetailPage } from "../pages/admin/user-detail.page.js";
 import { UsersListPage } from "../pages/admin/users-list.page.js";
@@ -14,6 +17,8 @@ import { LoginPage } from "../pages/login.page.js";
 import { NavigationComponent } from "../pages/navigation.component.js";
 import { RegisterPage } from "../pages/register.page.js";
 import { ResetPasswordPage } from "../pages/reset-password.page.js";
+import { SecuritySettingsPage } from "../pages/security-settings.page.js";
+import { Verify2faPage } from "../pages/verify-2fa.page.js";
 
 /**
  * Route password-reset API calls through Playwright so that empty-body
@@ -47,6 +52,8 @@ interface PageFixtures {
   registerPage: RegisterPage;
   forgotPasswordPage: ForgotPasswordPage;
   resetPasswordPage: ResetPasswordPage;
+  verify2faPage: Verify2faPage;
+  securitySettingsPage: SecuritySettingsPage;
   navigation: NavigationComponent;
 }
 
@@ -58,6 +65,9 @@ interface AdminPageFixtures {
   featureFlagDetailPage: FeatureFlagDetailPage;
   featureFlagCreatePage: FeatureFlagCreatePage;
   auditLogsPage: AuditLogsPage;
+  rateLimitsListPage: RateLimitsListPage;
+  rateLimitCreatePage: RateLimitCreatePage;
+  rateLimitDetailPage: RateLimitDetailPage;
 }
 
 interface AuthFixtures {
@@ -109,6 +119,15 @@ export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures
     await use(new ResetPasswordPage(page));
   },
 
+  verify2faPage: async ({ page }, use) => {
+    await page.context().clearCookies();
+    await use(new Verify2faPage(page));
+  },
+
+  securitySettingsPage: async ({ page }, use) => {
+    await use(new SecuritySettingsPage(page));
+  },
+
   navigation: async ({ page }, use) => {
     await use(new NavigationComponent(page));
   },
@@ -139,6 +158,18 @@ export const test = base.extend<GuestFixtures & PageFixtures & AdminPageFixtures
 
   auditLogsPage: async ({ adminPage }, use) => {
     await use(new AuditLogsPage(adminPage));
+  },
+
+  rateLimitsListPage: async ({ adminPage }, use) => {
+    await use(new RateLimitsListPage(adminPage));
+  },
+
+  rateLimitCreatePage: async ({ adminPage }, use) => {
+    await use(new RateLimitCreatePage(adminPage));
+  },
+
+  rateLimitDetailPage: async ({ adminPage }, use) => {
+    await use(new RateLimitDetailPage(adminPage));
   },
 
   authenticatedContext: async ({ browser }, use) => {
