@@ -1,0 +1,3 @@
+[2FA Debug] manualEntryKey length=52 prefix=LJEU
+[2FA Debug] generated code=668501 time=1771419291
+[2FA Debug] verify-setup FAILED: status=400 body={"detail":"Invalid verification code","instance":"/api/v1/auth/2fa/verify-setup","status":400,"title":"Bad Request","type":"https://api.sc.kpi.ua/errors/400"}

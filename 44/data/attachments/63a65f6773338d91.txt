@@ -1,0 +1,3 @@
+[2FA Debug] manualEntryKey length=52 prefix=KRMV
+[2FA Debug] generated code=316716 time=1771419297
+[2FA Debug] verify-setup FAILED: status=400 body={"detail":"Invalid verification code","instance":"/api/v1/auth/2fa/verify-setup","status":400,"title":"Bad Request","type":"https://api.sc.kpi.ua/errors/400"}
