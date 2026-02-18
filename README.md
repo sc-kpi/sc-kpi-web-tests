@@ -108,15 +108,50 @@ pnpm report:allure:serve
 ```
 src/
 ├── config/          # YAML configuration system (profiles, env overrides)
-├── auth/            # Authentication setup (storageState management)
-├── pages/           # Page Object Models (BasePage, HomePage, LoginPage, etc.)
+├── auth/            # Authentication setup (storageState management, handles 2FA when enabled)
+├── pages/           # Page Object Models
+│   ├── base.page.ts             # BasePage with common navigation helpers
+│   ├── home.page.ts             # Home page
+│   ├── login.page.ts            # Login page
+│   ├── register.page.ts         # Registration page
+│   ├── forgot-password.page.ts  # Forgot password page
+│   ├── reset-password.page.ts   # Reset password page
+│   ├── security-settings.page.ts # 2FA/security settings page
+│   ├── verify-2fa.page.ts       # TOTP verification page
+│   ├── notification-center.page.ts      # Notification center
+│   ├── notification-preferences.page.ts # Notification preferences
+│   ├── notification-bell.component.ts   # Notification bell component
+│   ├── navigation.component.ts          # Navigation component
+│   └── admin/                   # Admin page objects
+│       ├── users-list.page.ts
+│       ├── user-create.page.ts
+│       ├── user-detail.page.ts
+│       ├── feature-flags-list.page.ts
+│       ├── feature-flag-create.page.ts
+│       ├── feature-flag-detail.page.ts
+│       ├── rate-limits-list.page.ts
+│       ├── rate-limit-create.page.ts
+│       ├── rate-limit-detail.page.ts
+│       ├── audit-logs.page.ts
+│       └── admin-notifications.page.ts
 ├── data/            # Test data factories (@faker-js/faker)
 ├── fixtures/        # Custom Playwright fixtures (POMs + auth contexts)
-└── helpers/         # Utility helpers (Allure, assertions, waits)
+└── helpers/         # Utility helpers
+    ├── allure.helper.ts         # Allure reporting integration
+    ├── assertion.helper.ts      # Custom assertion helpers
+    ├── auth-api.helper.ts       # Auth API helper
+    ├── feature-flag.helper.ts   # Feature flag API helper
+    ├── mailpit.helper.ts        # Mailpit mail server integration
+    ├── notification.helper.ts   # Notification API helper
+    ├── rate-limit.helper.ts     # Rate limit API helper
+    ├── totp.helper.ts           # TOTP 2FA helper
+    ├── user.helper.ts           # User management helper
+    └── wait.helper.ts           # Wait/polling utilities
 tests/
 ├── smoke/           # @smoke — critical path tests
-├── auth/            # @regression — authentication flow tests
-├── public/          # @regression — public page tests (skipped until built)
+├── auth/            # @regression — authentication flow tests (login, register, OAuth, TOTP, password reset)
+├── admin/           # @regression — admin panel tests (users, feature flags, rate limits, audit, notifications)
+├── notifications/   # @regression — notification center and preferences tests
 └── framework/       # @framework — config validation tests
 ```
 
