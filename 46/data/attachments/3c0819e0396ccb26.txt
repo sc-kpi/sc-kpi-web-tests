@@ -1,0 +1,2 @@
+[2FA-DEBUG] CLIENT: key prefix=GZHF len=52 decoded=32bytes first8hex=364e564e554f5935 epochSec=1771422261 counter=59047408 code=567771
+[2FA-DEBUG] CLIENT: verify-setup FAILED 400 body={"detail":"Invalid verification code","instance":"/api/v1/auth/2fa/verify-setup","status":400,"title":"Bad Request","type":"https://api.sc.kpi.ua/errors/400"}
