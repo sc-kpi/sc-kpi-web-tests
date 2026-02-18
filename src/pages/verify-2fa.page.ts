@@ -14,10 +14,12 @@ export class Verify2faPage extends BasePage {
     super(page);
     this.codeInput = page.getByLabel(/code|код/i);
     this.submitButton = page.getByRole("button", { name: /verify|підтвердити/i });
-    this.recoveryCodeLink = page.getByRole("link", {
+    this.recoveryCodeLink = page.getByRole("button", {
       name: /recovery|відновлення|backup|резервн/i,
     });
-    this.errorMessage = page.locator('[role="alert"]:not(#__next-route-announcer__)');
+    this.errorMessage = page.locator(
+      '[role="alert"]:not(#__next-route-announcer__), form p.text-destructive',
+    );
   }
 
   async goto(): Promise<void> {

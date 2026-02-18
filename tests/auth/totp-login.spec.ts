@@ -149,8 +149,8 @@ test.describe("TOTP 2FA login", { tag: [Tag.REGRESSION] }, () => {
       await loginPage.login(user.email, user.password);
       await expect(loginPage.page).toHaveURL(Route.VERIFY_2FA);
 
-      // Enter an incorrectly formatted code
-      await verify2faPage.enterCode("12345");
+      // Enter a valid-format but expired/wrong code
+      await verify2faPage.enterCode("999999");
       await verify2faPage.submit();
       await expect(verify2faPage.errorMessage).toBeVisible();
     },
@@ -168,9 +168,9 @@ test.describe("TOTP 2FA login", { tag: [Tag.REGRESSION] }, () => {
       await loginPage.login(user.email, user.password);
       await expect(loginPage.page).toHaveURL(Route.VERIFY_2FA);
 
-      // Try navigating to a protected page without completing 2FA
-      await loginPage.page.goto(Route.HOME);
-      await expect(loginPage.page).not.toHaveURL(Route.HOME);
+      // Try navigating to a protected (non-public) page without completing 2FA
+      await loginPage.page.goto(Config.baseUrl() + Route.PROFILE);
+      await expect(loginPage.page).not.toHaveURL(new RegExp(Route.PROFILE));
     },
   );
 });
