@@ -10,20 +10,32 @@ export class SecuritySettingsPage extends BasePage {
   readonly status: Locator;
   readonly qrCode: Locator;
   readonly secretKey: Locator;
-  readonly confirmButton: Locator;
+  readonly nextButton: Locator;
+  readonly verifyAndEnableButton: Locator;
+  readonly disableSubmitButton: Locator;
   readonly codeInput: Locator;
+  readonly passwordInput: Locator;
   readonly successMessage: Locator;
   readonly errorMessage: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.enableButton = page.getByRole("button", { name: /enable.*2fa|увімкнути.*2fa/i });
+    this.enableButton = page.getByRole("button", { name: /^enable$|^увімкнути$/i });
     this.disableButton = page.getByRole("button", { name: /disable.*2fa|вимкнути.*2fa/i });
     this.status = page.getByTestId("2fa-status");
     this.qrCode = page.locator('[data-testid="2fa-qr-code"], canvas, img[alt*="QR"]');
     this.secretKey = page.getByTestId("2fa-secret-key");
-    this.confirmButton = page.getByRole("button", { name: /confirm|підтвердити/i });
+    this.nextButton = page.getByRole("button", { name: /^next$|^далі$/i });
+    this.verifyAndEnableButton = page.getByRole("button", {
+      name: /verify.*enable|перевірити.*увімкнути/i,
+    });
+    this.disableSubmitButton = page
+      .getByRole("button", {
+        name: /disable.*2fa|вимкнути.*2fa/i,
+      })
+      .last();
     this.codeInput = page.getByLabel(/code|код/i);
+    this.passwordInput = page.getByLabel(/password|пароль/i);
     this.successMessage = page.getByText(
       /2fa.*enabled|2fa.*disabled|2fa.*увімкнено|2fa.*вимкнено/i,
     );
@@ -45,11 +57,12 @@ export class SecuritySettingsPage extends BasePage {
 
   async enableTwoFactor(code: string): Promise<void> {
     await this.codeInput.fill(code);
-    await this.confirmButton.click();
+    await this.verifyAndEnableButton.click();
   }
 
-  async disableTwoFactor(code: string): Promise<void> {
+  async disableTwoFactor(password: string, code: string): Promise<void> {
+    await this.passwordInput.fill(password);
     await this.codeInput.fill(code);
-    await this.confirmButton.click();
+    await this.disableSubmitButton.click();
   }
 }
