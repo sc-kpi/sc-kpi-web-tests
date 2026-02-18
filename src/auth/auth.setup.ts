@@ -55,24 +55,37 @@ setup("authenticate as admin user", async ({ page, request }) => {
     throw new Error("No access_token cookie in admin login response");
   }
 
-  // Step 2: Setup TOTP
-  const setupResponse = await request.post(`${apiBase}/api/v1/auth/2fa/setup`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+  // Step 2: Setup TOTP — use explicit Bearer auth, suppress auto-cookies
+  const setupResponse = await request.fetch(`${apiBase}/api/v1/auth/2fa/setup`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      Cookie: "",
+    },
   });
   if (!setupResponse.ok()) {
-    throw new Error(`2FA setup failed: ${setupResponse.status()}`);
+    const body = await setupResponse.text();
+    throw new Error(`2FA setup failed: ${setupResponse.status()} | body: ${body}`);
   }
   const setupData = (await setupResponse.json()) as { manualEntryKey: string };
   const totpSecret = setupData.manualEntryKey;
 
-  // Step 3: Verify TOTP setup
+  // Step 3: Verify TOTP setup — use fetch() to avoid cookie interference
   const setupCode = TotpHelper.generateCode(totpSecret);
-  const verifyResponse = await request.post(`${apiBase}/api/v1/auth/2fa/verify-setup`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
+  const verifyResponse = await request.fetch(`${apiBase}/api/v1/auth/2fa/verify-setup`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json",
+      Cookie: "",
+    },
     data: { code: setupCode },
   });
   if (!verifyResponse.ok()) {
-    throw new Error(`2FA verify-setup failed: ${verifyResponse.status()}`);
+    const body = await verifyResponse.text();
+    throw new Error(
+      `2FA verify-setup failed: ${verifyResponse.status()} | body: ${body} | token-prefix: ${accessToken?.substring(0, 20)}`,
+    );
   }
 
   // Save TOTP secret for reuse by other helpers
