@@ -36,4 +36,9 @@ export class TotpHelper {
       1_000_000;
     return code.toString().padStart(6, "0");
   }
+
+  /** Decode base32 to Buffer (exposed for debugging). */
+  static decodeKey(base32Secret: string): Buffer {
+    return base32Decode(base32Secret);
+  }
 }
