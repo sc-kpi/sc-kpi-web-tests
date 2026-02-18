@@ -1,0 +1,4 @@
+[DEBUG] Login status: 200
+[DEBUG] Login set-cookie: mfa_token=eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJmYzRmY2Y0OC1hMzllLTQ2MTktYjdhZS0yNGYyNDVhYTExNWQiLCJzdWIiOiIyYWM5NjMzYi0wYTdlLTRiNmEtODJmMi1iMTdiZDk1ZmU3ZDgiLCJ0eXBlIjoibWZhIiwiaWF0IjoxNzcxNDI1NTQzLCJleHAiO
+[DEBUG] Login body: {"capabilityTier":0,"twoFactorEnabled":true,"twoFactorRequired":true}
+[DEBUG] All header keys: vary, set-cookie, x-content-type-options, x-xss-protection, cache-control, pragma, expires, x-frame-options, content-type, transfer-encoding, date, keep-alive, connection

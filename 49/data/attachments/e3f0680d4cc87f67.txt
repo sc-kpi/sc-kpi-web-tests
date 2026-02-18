@@ -1,0 +1,4 @@
+[DEBUG] Login status: 200
+[DEBUG] Login set-cookie: access_token=eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJlYzUyY2NhNi1iMGJjLTRlMGEtODFkYi01MDA1OWZhYjdhZDkiLCJzdWIiOiIyYWM5NjMzYi0wYTdlLTRiNmEtODJmMi1iMTdiZDk1ZmU3ZDgiLCJlbWFpbCI6ImFkbWluQHRlc3Qua3BpLnVhIiwidGllci
+[DEBUG] Login body: {"id":"2ac9633b-0a7e-4b6a-82f2-b17bd95fe7d8","email":"admin@test.kpi.ua","firstName":"Test","lastName":"Admin","capabilityTier":5,"partnerRoles":[],"twoFactorEnabled":false,"twoFactorRequired":false}
+[DEBUG] All header keys: vary, set-cookie, x-content-type-options, x-xss-protection, cache-control, pragma, expires, x-frame-options, content-type, transfer-encoding, date, keep-alive, connection

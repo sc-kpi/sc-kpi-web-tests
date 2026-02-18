@@ -1,0 +1,3 @@
+[DEBUG auth-api] Login status: 200
+[DEBUG auth-api] Set-Cookie count: 1
+[DEBUG auth-api] Set-Cookie values: mfa_token=eyJhbGciOiJIUzM4NCJ9.eyJqdGkiOiJiZmUxOGI
