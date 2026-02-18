@@ -48,11 +48,20 @@ setup("authenticate as admin user", async ({ page, request }) => {
   const loginResponse = await request.post(`${apiBase}/api/v1/auth/login`, {
     data: { email: credentials.email, password: credentials.password },
   });
-  const loginCookies = loginResponse.headers()["set-cookie"] ?? "";
+  const loginStatus = loginResponse.status();
+  const loginHeaders = loginResponse.headers();
+  const loginBody = await loginResponse.text();
+  const loginCookies = loginHeaders["set-cookie"] ?? "";
+  console.log(`[DEBUG] Login status: ${loginStatus}`);
+  console.log(`[DEBUG] Login set-cookie: ${loginCookies.substring(0, 200)}`);
+  console.log(`[DEBUG] Login body: ${loginBody.substring(0, 200)}`);
+  console.log(`[DEBUG] All header keys: ${Object.keys(loginHeaders).join(", ")}`);
   const tokenMatch = loginCookies.match(/access_token=([^;]+)/);
   const accessToken = tokenMatch?.[1];
   if (!accessToken) {
-    throw new Error("No access_token cookie in admin login response");
+    throw new Error(
+      `No access_token cookie in admin login response (status=${loginStatus}, set-cookie=${loginCookies.substring(0, 300)}, body=${loginBody.substring(0, 200)})`,
+    );
   }
 
   // Step 2: Setup TOTP — use explicit Bearer auth, suppress auto-cookies
