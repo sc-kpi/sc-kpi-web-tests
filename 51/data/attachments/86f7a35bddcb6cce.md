@@ -1,0 +1,74 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - heading "Адміністрування" [level=2] [ref=e4]
+      - generic [ref=e5]:
+        - link "Користувачі" [ref=e6] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Функціональні прапорці" [ref=e7] [cursor=pointer]:
+          - /url: /admin/feature-flags
+        - link "Журнал аудиту" [ref=e8] [cursor=pointer]:
+          - /url: /admin/audit-logs
+        - link "Сповіщення" [ref=e9] [cursor=pointer]:
+          - /url: /admin/notifications
+        - link "Обмеження запитів" [ref=e10] [cursor=pointer]:
+          - /url: /admin/rate-limits
+    - main [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - heading "Редагувати прапорець" [level=1] [ref=e14]
+          - button "Назад до списку" [ref=e15]
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "Деталі прапорця" [level=3] [ref=e19]
+            - generic [ref=e21]:
+              - generic [ref=e22]:
+                - generic [ref=e23]: Ключ
+                - textbox "Ключ" [disabled]: e2e-detail-29293b28
+              - generic [ref=e24]:
+                - generic [ref=e25]: Назва
+                - textbox "Назва" [ref=e26]: E2E Detail Аврелія Бурмило
+              - generic [ref=e27]:
+                - generic [ref=e28]: Опис
+                - textbox "Опис" [ref=e29]: Created by E2E test
+              - generic [ref=e30]:
+                - generic [ref=e31]: Увімкнено
+                - checkbox "Увімкнено" [ref=e32]
+              - generic [ref=e33]:
+                - generic [ref=e34]: Середовище
+                - combobox "Середовище" [ref=e35]:
+                  - option "Усі середовища" [selected]
+                  - option "Development"
+                  - option "Staging"
+                  - option "Production"
+              - generic [ref=e36]:
+                - generic [ref=e37]: Розгортання %
+                - spinbutton "Розгортання %" [active] [ref=e38]: "50"
+              - button "Зберегти" [ref=e39]
+          - generic [ref=e40]:
+            - heading "Перевизначення" [level=3] [ref=e42]
+            - generic [ref=e43]:
+              - paragraph [ref=e44]: Перевизначення не налаштовані
+              - generic [ref=e45]:
+                - generic [ref=e46]:
+                  - generic [ref=e47]: Тип
+                  - combobox "Тип" [ref=e48]:
+                    - option "Tier" [selected]
+                    - option "User"
+                - generic [ref=e49]:
+                  - generic [ref=e50]: Tier Level
+                  - spinbutton "Tier Level" [ref=e51]: "1"
+                - generic [ref=e52]:
+                  - generic [ref=e53]: Увімкнено
+                  - checkbox "Увімкнено" [checked] [ref=e54]
+                - button "Додати перевизначення" [ref=e55]
+        - generic [ref=e56]:
+          - heading "Журнал змін" [level=3] [ref=e58]
+          - link "Журнал змін →" [ref=e60] [cursor=pointer]:
+            - /url: /admin/audit-logs?entityType=FEATURE_FLAG&entityId=f5949756-34a7-409d-b178-e1010f885a81
+  - region "Notifications alt+T"
+  - alert [ref=e61]
+```
