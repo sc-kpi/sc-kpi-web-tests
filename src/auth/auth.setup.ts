@@ -71,14 +71,7 @@ setup("authenticate as admin user", async ({ page, request }) => {
   const totpSecret = setupData.manualEntryKey;
 
   // Step 3: Verify TOTP setup — use fetch() to avoid cookie interference
-  const keyBytes = TotpHelper.decodeKey(totpSecret);
-  const epochSec = Math.floor(Date.now() / 1000);
   const setupCode = TotpHelper.generateCode(totpSecret);
-  console.log(
-    `[2FA-DEBUG] CLIENT: key prefix=${totpSecret.substring(0, 4)} len=${totpSecret.length}` +
-      ` decoded=${keyBytes.length}bytes first8hex=${keyBytes.subarray(0, 8).toString("hex")}` +
-      ` epochSec=${epochSec} counter=${Math.floor(epochSec / 30)} code=${setupCode}`,
-  );
   const verifyResponse = await request.fetch(`${apiBase}/api/v1/auth/2fa/verify-setup`, {
     method: "POST",
     headers: {
@@ -90,7 +83,6 @@ setup("authenticate as admin user", async ({ page, request }) => {
   });
   if (!verifyResponse.ok()) {
     const body = await verifyResponse.text();
-    console.log(`[2FA-DEBUG] CLIENT: verify-setup FAILED ${verifyResponse.status()} body=${body}`);
     throw new Error(`2FA verify-setup failed: ${verifyResponse.status()} | body: ${body}`);
   }
 
