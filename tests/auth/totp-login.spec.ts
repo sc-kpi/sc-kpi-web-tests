@@ -42,19 +42,25 @@ async function registerUserWith2fa(
   const setupResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/2fa/setup`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const setupData = (await setupResponse.json()) as { secret: string };
+  if (!setupResponse.ok()) {
+    throw new Error(`2FA setup failed: ${setupResponse.status()}`);
+  }
+  const setupData = (await setupResponse.json()) as { manualEntryKey: string };
 
-  // Confirm 2FA setup with a valid TOTP code
-  const code = TotpHelper.generateCode(setupData.secret);
-  await request.post(`${Config.apiBaseUrl()}/api/v1/auth/2fa/confirm`, {
+  // Verify 2FA setup with a valid TOTP code
+  const code = TotpHelper.generateCode(setupData.manualEntryKey);
+  const verifyResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/2fa/verify-setup`, {
     headers: { Authorization: `Bearer ${token}` },
     data: { code },
   });
+  if (!verifyResponse.ok()) {
+    throw new Error(`2FA verify-setup failed: ${verifyResponse.status()}`);
+  }
 
   return {
     email: regData.email,
     password: regData.password,
-    totpSecret: setupData.secret,
+    totpSecret: setupData.manualEntryKey,
   };
 }
 

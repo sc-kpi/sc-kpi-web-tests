@@ -1,3 +1,4 @@
+import type { APIResponse, BrowserContext } from "@playwright/test";
 import { Config } from "../../src/config/config.js";
 import { Tag } from "../../src/config/test-tag.js";
 import { TestDataFactory } from "../../src/data/test-data-factory.js";
@@ -6,6 +7,21 @@ import { TotpHelper } from "../../src/helpers/totp.helper.js";
 
 function skipIfNoApi() {
   test.skip(!Config.apiBaseUrl(), "Requires backend API");
+}
+
+async function setCookiesFromResponse(
+  response: APIResponse,
+  context: BrowserContext,
+): Promise<void> {
+  const allHeaders = response.headersArray();
+  for (const h of allHeaders) {
+    if (h.name.toLowerCase() === "set-cookie") {
+      const match = h.value.match(/^([^=]+)=([^;]+)/);
+      if (match) {
+        await context.addCookies([{ name: match[1], value: match[2], url: Config.baseUrl() }]);
+      }
+    }
+  }
 }
 
 test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
@@ -30,18 +46,7 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
       const loginResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/login`, {
         data: { email: regData.email, password: regData.password },
       });
-      const cookies = loginResponse.headers()["set-cookie"];
-      if (cookies) {
-        const parsed = cookies.split(";").map((c) => c.trim());
-        for (const cookie of parsed) {
-          const [name, value] = cookie.split("=");
-          if (name && value) {
-            await securitySettingsPage.page
-              .context()
-              .addCookies([{ name, value, url: Config.baseUrl() }]);
-          }
-        }
-      }
+      await setCookiesFromResponse(loginResponse, securitySettingsPage.page.context());
 
       await securitySettingsPage.goto();
       await expect(securitySettingsPage.enableButton).toBeVisible();
@@ -69,18 +74,7 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
     const loginResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/login`, {
       data: { email: regData.email, password: regData.password },
     });
-    const cookies = loginResponse.headers()["set-cookie"];
-    if (cookies) {
-      const parsed = cookies.split(";").map((c) => c.trim());
-      for (const cookie of parsed) {
-        const [name, value] = cookie.split("=");
-        if (name && value) {
-          await securitySettingsPage.page
-            .context()
-            .addCookies([{ name, value, url: Config.baseUrl() }]);
-        }
-      }
-    }
+    await setCookiesFromResponse(loginResponse, securitySettingsPage.page.context());
 
     await securitySettingsPage.goto();
     await securitySettingsPage.enableButton.click();
@@ -111,18 +105,7 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
     const loginResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/login`, {
       data: { email: regData.email, password: regData.password },
     });
-    const cookies = loginResponse.headers()["set-cookie"];
-    if (cookies) {
-      const parsed = cookies.split(";").map((c) => c.trim());
-      for (const cookie of parsed) {
-        const [name, value] = cookie.split("=");
-        if (name && value) {
-          await securitySettingsPage.page
-            .context()
-            .addCookies([{ name, value, url: Config.baseUrl() }]);
-        }
-      }
-    }
+    await setCookiesFromResponse(loginResponse, securitySettingsPage.page.context());
 
     await securitySettingsPage.goto();
     await securitySettingsPage.enableButton.click();
@@ -158,18 +141,7 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
       const loginResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/login`, {
         data: { email: regData.email, password: regData.password },
       });
-      const cookies = loginResponse.headers()["set-cookie"];
-      if (cookies) {
-        const parsed = cookies.split(";").map((c) => c.trim());
-        for (const cookie of parsed) {
-          const [name, value] = cookie.split("=");
-          if (name && value) {
-            await securitySettingsPage.page
-              .context()
-              .addCookies([{ name, value, url: Config.baseUrl() }]);
-          }
-        }
-      }
+      await setCookiesFromResponse(loginResponse, securitySettingsPage.page.context());
 
       await securitySettingsPage.goto();
       await securitySettingsPage.enableButton.click();
@@ -198,18 +170,7 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
     const loginResponse = await request.post(`${Config.apiBaseUrl()}/api/v1/auth/login`, {
       data: { email: regData.email, password: regData.password },
     });
-    const cookies = loginResponse.headers()["set-cookie"];
-    if (cookies) {
-      const parsed = cookies.split(";").map((c) => c.trim());
-      for (const cookie of parsed) {
-        const [name, value] = cookie.split("=");
-        if (name && value) {
-          await securitySettingsPage.page
-            .context()
-            .addCookies([{ name, value, url: Config.baseUrl() }]);
-        }
-      }
-    }
+    await setCookiesFromResponse(loginResponse, securitySettingsPage.page.context());
 
     await securitySettingsPage.goto();
     await securitySettingsPage.enableButton.click();
