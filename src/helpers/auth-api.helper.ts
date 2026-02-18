@@ -42,9 +42,16 @@ export class AuthApiHelper {
     }
 
     const loginCookies = loginResponse.headers.getSetCookie();
+    console.log(`[DEBUG auth-api] Login status: ${loginResponse.status}`);
+    console.log(`[DEBUG auth-api] Set-Cookie count: ${loginCookies.length}`);
+    console.log(
+      `[DEBUG auth-api] Set-Cookie values: ${loginCookies.map((c) => c.substring(0, 50)).join(" | ")}`,
+    );
     const accessToken = extractCookie(loginCookies, "access_token");
     if (!accessToken) {
-      throw new Error("No access_token cookie in login response");
+      throw new Error(
+        `No access_token cookie in login response (status=${loginResponse.status}, cookies=[${loginCookies.map((c) => c.substring(0, 50)).join(", ")}])`,
+      );
     }
 
     // Step 2: Setup TOTP
