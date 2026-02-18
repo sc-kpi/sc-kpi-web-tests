@@ -441,8 +441,14 @@ jobs:
         continue-on-error: true
 
       - name: Merge HTML report
-        if: hashFiles('all-blob-reports/**') != ''
-        run: pnpm exec playwright merge-reports --reporter html ./all-blob-reports
+        id: merge-report
+        continue-on-error: true
+        run: |
+          if ls all-blob-reports/*.zip 1>/dev/null 2>&1; then
+            pnpm exec playwright merge-reports --reporter html ./all-blob-reports
+          else
+            echo "::warning::No blob reports found to merge"
+          fi
 
       - name: Download Allure results
         uses: actions/download-artifact@v4
