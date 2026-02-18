@@ -325,7 +325,6 @@ jobs:
           GOOGLE_CLIENT_ID: test-client-id
           GOOGLE_CLIENT_SECRET: test-client-secret
           RATE_LIMIT_ENABLED: "false"
-          LOGGING_LEVEL_UA_KPI_SC_AUTH: DEBUG
 
       - name: Wait for API
         if: inputs.base_url == ''
@@ -405,9 +404,9 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-      - name: Dump API logs on failure
-        if: failure() && inputs.base_url == ''
-        run: tail -300 api.log || echo "No API log file found"
+      - name: Dump API logs
+        if: always() && inputs.base_url == ''
+        run: tail -500 api.log || echo "No API log file found"
 
       - name: Cleanup MailPit
         if: always()
