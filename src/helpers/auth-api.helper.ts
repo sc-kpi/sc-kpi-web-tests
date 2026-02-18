@@ -1,5 +1,12 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { Config } from "../config/config.js";
 import { TotpHelper } from "./totp.helper.js";
+
+const ADMIN_TOTP_SECRET_PATH = resolve(
+  import.meta.dirname,
+  "../../playwright/.auth/.admin-totp-secret",
+);
 
 function extractCookie(setCookie: string[], name: string): string | undefined {
   const prefix = `${name}=`;
@@ -9,6 +16,14 @@ function extractCookie(setCookie: string[], name: string): string | undefined {
     }
   }
   return undefined;
+}
+
+function readSavedTotpSecret(): string | undefined {
+  try {
+    return readFileSync(ADMIN_TOTP_SECRET_PATH, "utf-8").trim();
+  } catch {
+    return undefined;
+  }
 }
 
 export class AuthApiHelper {
@@ -31,7 +46,7 @@ export class AuthApiHelper {
 
     const apiBase = Config.apiBaseUrl();
 
-    // Step 1: Login to get access_token
+    // Step 1: Login
     const loginResponse = await fetch(`${apiBase}/api/v1/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -42,19 +57,34 @@ export class AuthApiHelper {
     }
 
     const loginCookies = loginResponse.headers.getSetCookie();
-    console.log(`[DEBUG auth-api] Login status: ${loginResponse.status}`);
-    console.log(`[DEBUG auth-api] Set-Cookie count: ${loginCookies.length}`);
-    console.log(
-      `[DEBUG auth-api] Set-Cookie values: ${loginCookies.map((c) => c.substring(0, 50)).join(" | ")}`,
-    );
     const accessToken = extractCookie(loginCookies, "access_token");
-    if (!accessToken) {
-      throw new Error(
-        `No access_token cookie in login response (status=${loginResponse.status}, cookies=[${loginCookies.map((c) => c.substring(0, 50)).join(", ")}])`,
-      );
+    const mfaToken = extractCookie(loginCookies, "mfa_token");
+
+    if (accessToken) {
+      // 2FA not yet enabled — set it up
+      return AuthApiHelper.setupMfaAndAuthenticate(apiBase, accessToken);
     }
 
-    // Step 2: Setup TOTP
+    if (mfaToken) {
+      // 2FA already enabled (e.g. by auth.setup.ts) — verify with saved secret
+      return AuthApiHelper.verifyMfaLogin(apiBase, mfaToken);
+    }
+
+    throw new Error(
+      `Admin login returned neither access_token nor mfa_token (cookies=[${loginCookies.map((c) => c.substring(0, 40)).join(", ")}])`,
+    );
+  }
+
+  private static async setupMfaAndAuthenticate(
+    apiBase: string,
+    accessToken: string,
+  ): Promise<string> {
+    const credentials = Config.auth().tierCredentials.admin;
+    if (!credentials) {
+      throw new Error("Admin tier credentials not configured");
+    }
+
+    // Setup TOTP
     const setupResponse = await fetch(`${apiBase}/api/v1/auth/2fa/setup`, {
       method: "POST",
       headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
@@ -65,7 +95,7 @@ export class AuthApiHelper {
     const setupData = (await setupResponse.json()) as { manualEntryKey: string };
     const totpSecret = setupData.manualEntryKey;
 
-    // Step 3: Verify setup with TOTP code
+    // Verify setup
     const setupCode = TotpHelper.generateCode(totpSecret);
     const verifySetupResponse = await fetch(`${apiBase}/api/v1/auth/2fa/verify-setup`, {
       method: "POST",
@@ -80,7 +110,7 @@ export class AuthApiHelper {
       throw new Error(`2FA verify-setup failed: ${verifySetupResponse.status}`);
     }
 
-    // Step 4: Re-login — now returns mfa_token since 2FA is enabled
+    // Re-login — now returns mfa_token
     const reLoginResponse = await fetch(`${apiBase}/api/v1/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -96,29 +126,48 @@ export class AuthApiHelper {
       throw new Error("No mfa_token cookie in re-login response");
     }
 
-    // Step 5: Verify MFA login with TOTP code
-    const loginCode = TotpHelper.generateCode(totpSecret);
-    const verifyLoginResponse = await fetch(`${apiBase}/api/v1/auth/2fa/verify-login`, {
+    AuthApiHelper.cachedAdminTotpSecret = totpSecret;
+    return AuthApiHelper.completeMfaVerification(apiBase, mfaToken, totpSecret);
+  }
+
+  private static async verifyMfaLogin(apiBase: string, mfaToken: string): Promise<string> {
+    const totpSecret = AuthApiHelper.cachedAdminTotpSecret ?? readSavedTotpSecret();
+    if (!totpSecret) {
+      throw new Error(
+        "2FA is enabled but no TOTP secret available (not cached and not found on disk)",
+      );
+    }
+
+    AuthApiHelper.cachedAdminTotpSecret = totpSecret;
+    return AuthApiHelper.completeMfaVerification(apiBase, mfaToken, totpSecret);
+  }
+
+  private static async completeMfaVerification(
+    apiBase: string,
+    mfaToken: string,
+    totpSecret: string,
+  ): Promise<string> {
+    const code = TotpHelper.generateCode(totpSecret);
+    const verifyResponse = await fetch(`${apiBase}/api/v1/auth/2fa/verify-login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
         Cookie: `mfa_token=${mfaToken}`,
       },
-      body: JSON.stringify({ code: loginCode }),
+      body: JSON.stringify({ code }),
     });
-    if (!verifyLoginResponse.ok) {
-      throw new Error(`2FA verify-login failed: ${verifyLoginResponse.status}`);
+    if (!verifyResponse.ok) {
+      throw new Error(`2FA verify-login failed: ${verifyResponse.status}`);
     }
 
-    const finalCookies = verifyLoginResponse.headers.getSetCookie();
-    const mfaVerifiedToken = extractCookie(finalCookies, "access_token");
-    if (!mfaVerifiedToken) {
+    const finalCookies = verifyResponse.headers.getSetCookie();
+    const verifiedToken = extractCookie(finalCookies, "access_token");
+    if (!verifiedToken) {
       throw new Error("No access_token cookie in verify-login response");
     }
 
-    AuthApiHelper.cachedAdminToken = mfaVerifiedToken;
-    AuthApiHelper.cachedAdminTotpSecret = totpSecret;
-    return mfaVerifiedToken;
+    AuthApiHelper.cachedAdminToken = verifiedToken;
+    return verifiedToken;
   }
 }
