@@ -324,6 +324,7 @@ jobs:
           MAIL_PORT: "1025"
           GOOGLE_CLIENT_ID: test-client-id
           GOOGLE_CLIENT_SECRET: test-client-secret
+          RATE_LIMIT_ENABLED: "false"
 
       - name: Wait for API
         if: inputs.base_url == ''
