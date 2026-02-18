@@ -115,7 +115,8 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
     const secret = await securitySettingsPage.getSecretKeyText();
     const code = TotpHelper.generateCode(secret);
 
-    // Confirm 2FA with the generated code
+    // Advance to code entry step and confirm
+    await securitySettingsPage.nextButton.click();
     await securitySettingsPage.enableTwoFactor(code);
     await expect(securitySettingsPage.successMessage).toBeVisible();
   });
@@ -146,7 +147,8 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
       await securitySettingsPage.goto();
       await securitySettingsPage.enableButton.click();
 
-      // Try with an invalid code
+      // Advance to code entry step and try with an invalid code
+      await securitySettingsPage.nextButton.click();
       await securitySettingsPage.enableTwoFactor("000000");
       await expect(securitySettingsPage.errorMessage).toBeVisible();
     },
@@ -179,6 +181,7 @@ test.describe("TOTP 2FA setup", { tag: [Tag.REGRESSION] }, () => {
     await expect(securitySettingsPage.secretKey).toBeVisible();
     const secret = await securitySettingsPage.getSecretKeyText();
     const code = TotpHelper.generateCode(secret);
+    await securitySettingsPage.nextButton.click();
     await securitySettingsPage.enableTwoFactor(code);
     await expect(securitySettingsPage.successMessage).toBeVisible();
 

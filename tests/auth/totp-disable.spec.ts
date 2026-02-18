@@ -101,7 +101,7 @@ test.describe("TOTP 2FA disable", { tag: [Tag.REGRESSION] }, () => {
 
       // Generate a valid TOTP code and confirm disable
       const code = TotpHelper.generateCode(user.totpSecret);
-      await securitySettingsPage.disableTwoFactor(code);
+      await securitySettingsPage.disableTwoFactor(user.password, code);
       await expect(securitySettingsPage.successMessage).toBeVisible();
     },
   );
@@ -123,7 +123,7 @@ test.describe("TOTP 2FA disable", { tag: [Tag.REGRESSION] }, () => {
       await securitySettingsPage.disableButton.click();
 
       // Try with an invalid code
-      await securitySettingsPage.disableTwoFactor("000000");
+      await securitySettingsPage.disableTwoFactor(user.password, "000000");
       await expect(securitySettingsPage.errorMessage).toBeVisible();
     },
   );
@@ -146,7 +146,7 @@ test.describe("TOTP 2FA disable", { tag: [Tag.REGRESSION] }, () => {
 
     // Disable 2FA
     const code = TotpHelper.generateCode(user.totpSecret);
-    await securitySettingsPage.disableTwoFactor(code);
+    await securitySettingsPage.disableTwoFactor(user.password, code);
     await expect(securitySettingsPage.successMessage).toBeVisible();
 
     // Reload and verify enable button is back
@@ -172,7 +172,7 @@ test.describe("TOTP 2FA disable", { tag: [Tag.REGRESSION] }, () => {
     await securitySettingsPage.goto();
     await securitySettingsPage.disableButton.click();
     const code = TotpHelper.generateCode(user.totpSecret);
-    await securitySettingsPage.disableTwoFactor(code);
+    await securitySettingsPage.disableTwoFactor(user.password, code);
     await expect(securitySettingsPage.successMessage).toBeVisible();
 
     // Clear cookies and login again - should go directly to home
