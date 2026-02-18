@@ -318,13 +318,14 @@ jobs:
 
       - name: Start API
         if: inputs.base_url == ''
-        run: java -jar api-jar/sc-kpi-api.jar --spring.profiles.active=dev &
+        run: java -jar api-jar/sc-kpi-api.jar --spring.profiles.active=dev > api.log 2>&1 &
         env:
           MAIL_HOST: localhost
           MAIL_PORT: "1025"
           GOOGLE_CLIENT_ID: test-client-id
           GOOGLE_CLIENT_SECRET: test-client-secret
           RATE_LIMIT_ENABLED: "false"
+          LOGGING_LEVEL_UA_KPI_SC_AUTH: DEBUG
 
       - name: Wait for API
         if: inputs.base_url == ''
@@ -403,6 +404,10 @@ jobs:
           path: .last-run.json
           retention-days: 14
           if-no-files-found: ignore
+
+      - name: Dump API logs on failure
+        if: failure() && inputs.base_url == ''
+        run: tail -300 api.log || echo "No API log file found"
 
       - name: Cleanup MailPit
         if: always()
