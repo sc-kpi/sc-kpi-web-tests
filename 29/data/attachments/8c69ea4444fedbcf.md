@@ -1,0 +1,322 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - heading "Адміністрування" [level=2] [ref=e4]
+      - generic [ref=e5]:
+        - link "Користувачі" [ref=e6] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Функціональні прапорці" [ref=e7] [cursor=pointer]:
+          - /url: /admin/feature-flags
+        - link "Журнал аудиту" [ref=e8] [cursor=pointer]:
+          - /url: /admin/audit-logs
+        - link "Сповіщення" [ref=e9] [cursor=pointer]:
+          - /url: /admin/notifications
+        - link "Обмеження запитів" [ref=e10] [cursor=pointer]:
+          - /url: /admin/rate-limits
+    - main [ref=e11]:
+      - generic [ref=e12]:
+        - generic [ref=e13]:
+          - heading "Функціональні прапорці" [level=1] [ref=e14]
+          - link "Створити прапорець" [ref=e15] [cursor=pointer]:
+            - /url: /admin/feature-flags/new
+            - button "Створити прапорець" [ref=e16]
+        - table [ref=e18]:
+          - rowgroup [ref=e19]:
+            - row "Ключ Назва Статус Середовище Розгортання % Дії" [ref=e20]:
+              - columnheader "Ключ" [ref=e21]
+              - columnheader "Назва" [ref=e22]
+              - columnheader "Статус" [ref=e23]
+              - columnheader "Середовище" [ref=e24]
+              - columnheader "Розгортання %" [ref=e25]
+              - columnheader "Дії" [ref=e26]
+          - rowgroup [ref=e27]:
+            - row "audit.system Audit System Увімкнено — 100% Off Редагувати Видалити" [ref=e28]:
+              - cell "audit.system" [ref=e29]
+              - cell "Audit System" [ref=e30]
+              - cell "Увімкнено" [ref=e31]:
+                - generic [ref=e32]: Увімкнено
+              - cell "—" [ref=e33]
+              - cell "100%" [ref=e34]
+              - cell "Off Редагувати Видалити" [ref=e35]:
+                - generic [ref=e36]:
+                  - button "Off" [ref=e37]
+                  - link "Редагувати" [ref=e38] [cursor=pointer]:
+                    - /url: /admin/feature-flags/2de8d3fc-0d4b-4762-ab53-dcf9dabb4104
+                    - button "Редагувати" [ref=e39]
+                  - button "Видалити" [ref=e40]
+            - row "auth.oauth2.google Google OAuth Увімкнено — 100% Off Редагувати Видалити" [ref=e41]:
+              - cell "auth.oauth2.google" [ref=e42]
+              - cell "Google OAuth" [ref=e43]
+              - cell "Увімкнено" [ref=e44]:
+                - generic [ref=e45]: Увімкнено
+              - cell "—" [ref=e46]
+              - cell "100%" [ref=e47]
+              - cell "Off Редагувати Видалити" [ref=e48]:
+                - generic [ref=e49]:
+                  - button "Off" [ref=e50]
+                  - link "Редагувати" [ref=e51] [cursor=pointer]:
+                    - /url: /admin/feature-flags/0db031c0-d283-4ea4-a013-f5bb0e3bbfa2
+                    - button "Редагувати" [ref=e52]
+                  - button "Видалити" [ref=e53]
+            - row "auth.password-reset Password Reset Увімкнено — 100% Off Редагувати Видалити" [ref=e54]:
+              - cell "auth.password-reset" [ref=e55]
+              - cell "Password Reset" [ref=e56]
+              - cell "Увімкнено" [ref=e57]:
+                - generic [ref=e58]: Увімкнено
+              - cell "—" [ref=e59]
+              - cell "100%" [ref=e60]
+              - cell "Off Редагувати Видалити" [ref=e61]:
+                - generic [ref=e62]:
+                  - button "Off" [ref=e63]
+                  - link "Редагувати" [ref=e64] [cursor=pointer]:
+                    - /url: /admin/feature-flags/8c77044f-fb45-4a08-968f-b3aebdac5786
+                    - button "Редагувати" [ref=e65]
+                  - button "Видалити" [ref=e66]
+            - row "auth.registration Registration Увімкнено — 100% Off Редагувати Видалити" [ref=e67]:
+              - cell "auth.registration" [ref=e68]
+              - cell "Registration" [ref=e69]
+              - cell "Увімкнено" [ref=e70]:
+                - generic [ref=e71]: Увімкнено
+              - cell "—" [ref=e72]
+              - cell "100%" [ref=e73]
+              - cell "Off Редагувати Видалити" [ref=e74]:
+                - generic [ref=e75]:
+                  - button "Off" [ref=e76]
+                  - link "Редагувати" [ref=e77] [cursor=pointer]:
+                    - /url: /admin/feature-flags/c7a6440c-2a0a-4170-a1f4-693aeb0861ad
+                    - button "Редагувати" [ref=e78]
+                  - button "Видалити" [ref=e79]
+            - row "notifications.telegram Telegram Notifications Вимкнено — 100% On Редагувати Видалити" [ref=e80]:
+              - cell "notifications.telegram" [ref=e81]
+              - cell "Telegram Notifications" [ref=e82]
+              - cell "Вимкнено" [ref=e83]:
+                - generic [ref=e84]: Вимкнено
+              - cell "—" [ref=e85]
+              - cell "100%" [ref=e86]
+              - cell "On Редагувати Видалити" [ref=e87]:
+                - generic [ref=e88]:
+                  - button "On" [ref=e89]
+                  - link "Редагувати" [ref=e90] [cursor=pointer]:
+                    - /url: /admin/feature-flags/7f73269d-1684-4676-b172-99d6c486b074
+                    - button "Редагувати" [ref=e91]
+                  - button "Видалити" [ref=e92]
+            - row "engagements.clubs Clubs Увімкнено — 100% Off Редагувати Видалити" [ref=e93]:
+              - cell "engagements.clubs" [ref=e94]
+              - cell "Clubs" [ref=e95]
+              - cell "Увімкнено" [ref=e96]:
+                - generic [ref=e97]: Увімкнено
+              - cell "—" [ref=e98]
+              - cell "100%" [ref=e99]
+              - cell "Off Редагувати Видалити" [ref=e100]:
+                - generic [ref=e101]:
+                  - button "Off" [ref=e102]
+                  - link "Редагувати" [ref=e103] [cursor=pointer]:
+                    - /url: /admin/feature-flags/c61e9790-e42f-41a0-a156-417d8b8c0c9f
+                    - button "Редагувати" [ref=e104]
+                  - button "Видалити" [ref=e105]
+            - row "engagements.projects Projects Увімкнено — 100% Off Редагувати Видалити" [ref=e106]:
+              - cell "engagements.projects" [ref=e107]
+              - cell "Projects" [ref=e108]
+              - cell "Увімкнено" [ref=e109]:
+                - generic [ref=e110]: Увімкнено
+              - cell "—" [ref=e111]
+              - cell "100%" [ref=e112]
+              - cell "Off Редагувати Видалити" [ref=e113]:
+                - generic [ref=e114]:
+                  - button "Off" [ref=e115]
+                  - link "Редагувати" [ref=e116] [cursor=pointer]:
+                    - /url: /admin/feature-flags/2ffa08d7-83be-463a-858d-9a0726f8bbc6
+                    - button "Редагувати" [ref=e117]
+                  - button "Видалити" [ref=e118]
+            - row "council.departments Departments Увімкнено — 100% Off Редагувати Видалити" [ref=e119]:
+              - cell "council.departments" [ref=e120]
+              - cell "Departments" [ref=e121]
+              - cell "Увімкнено" [ref=e122]:
+                - generic [ref=e123]: Увімкнено
+              - cell "—" [ref=e124]
+              - cell "100%" [ref=e125]
+              - cell "Off Редагувати Видалити" [ref=e126]:
+                - generic [ref=e127]:
+                  - button "Off" [ref=e128]
+                  - link "Редагувати" [ref=e129] [cursor=pointer]:
+                    - /url: /admin/feature-flags/ca717a18-5470-4424-8607-de2384f9eeab
+                    - button "Редагувати" [ref=e130]
+                  - button "Видалити" [ref=e131]
+            - row "documents.management Documents Увімкнено — 100% Off Редагувати Видалити" [ref=e132]:
+              - cell "documents.management" [ref=e133]
+              - cell "Documents" [ref=e134]
+              - cell "Увімкнено" [ref=e135]:
+                - generic [ref=e136]: Увімкнено
+              - cell "—" [ref=e137]
+              - cell "100%" [ref=e138]
+              - cell "Off Редагувати Видалити" [ref=e139]:
+                - generic [ref=e140]:
+                  - button "Off" [ref=e141]
+                  - link "Редагувати" [ref=e142] [cursor=pointer]:
+                    - /url: /admin/feature-flags/f9190d53-ddab-4ce2-a642-d44390b58251
+                    - button "Редагувати" [ref=e143]
+                  - button "Видалити" [ref=e144]
+            - row "user.partner-levels Partner Levels Увімкнено — 100% Off Редагувати Видалити" [ref=e145]:
+              - cell "user.partner-levels" [ref=e146]
+              - cell "Partner Levels" [ref=e147]
+              - cell "Увімкнено" [ref=e148]:
+                - generic [ref=e149]: Увімкнено
+              - cell "—" [ref=e150]
+              - cell "100%" [ref=e151]
+              - cell "Off Редагувати Видалити" [ref=e152]:
+                - generic [ref=e153]:
+                  - button "Off" [ref=e154]
+                  - link "Редагувати" [ref=e155] [cursor=pointer]:
+                    - /url: /admin/feature-flags/e869cc8a-b141-4e41-a6b4-46c7da0ababd
+                    - button "Редагувати" [ref=e156]
+                  - button "Видалити" [ref=e157]
+            - row "e2e-audit-log-058cbd10-0 E2E Audit Log 0 Вимкнено — 100% On Редагувати Видалити" [ref=e158]:
+              - cell "e2e-audit-log-058cbd10-0" [ref=e159]
+              - cell "E2E Audit Log 0" [ref=e160]
+              - cell "Вимкнено" [ref=e161]:
+                - generic [ref=e162]: Вимкнено
+              - cell "—" [ref=e163]
+              - cell "100%" [ref=e164]
+              - cell "On Редагувати Видалити" [ref=e165]:
+                - generic [ref=e166]:
+                  - button "On" [ref=e167]
+                  - link "Редагувати" [ref=e168] [cursor=pointer]:
+                    - /url: /admin/feature-flags/b80e9627-e99f-42d8-923c-af4916e908ff
+                    - button "Редагувати" [ref=e169]
+                  - button "Видалити" [ref=e170]
+            - row "e2e-audit-log-1185d57c-2 E2E Audit Log 2 Вимкнено — 100% On Редагувати Видалити" [ref=e171]:
+              - cell "e2e-audit-log-1185d57c-2" [ref=e172]
+              - cell "E2E Audit Log 2" [ref=e173]
+              - cell "Вимкнено" [ref=e174]:
+                - generic [ref=e175]: Вимкнено
+              - cell "—" [ref=e176]
+              - cell "100%" [ref=e177]
+              - cell "On Редагувати Видалити" [ref=e178]:
+                - generic [ref=e179]:
+                  - button "On" [ref=e180]
+                  - link "Редагувати" [ref=e181] [cursor=pointer]:
+                    - /url: /admin/feature-flags/076bf604-abcb-471c-a764-c14dfb8c554d
+                    - button "Редагувати" [ref=e182]
+                  - button "Видалити" [ref=e183]
+            - row "e2e-audit-log-9ee25387-0 E2E Audit Log 0 Вимкнено — 100% On Редагувати Видалити" [ref=e184]:
+              - cell "e2e-audit-log-9ee25387-0" [ref=e185]
+              - cell "E2E Audit Log 0" [ref=e186]
+              - cell "Вимкнено" [ref=e187]:
+                - generic [ref=e188]: Вимкнено
+              - cell "—" [ref=e189]
+              - cell "100%" [ref=e190]
+              - cell "On Редагувати Видалити" [ref=e191]:
+                - generic [ref=e192]:
+                  - button "On" [ref=e193]
+                  - link "Редагувати" [ref=e194] [cursor=pointer]:
+                    - /url: /admin/feature-flags/b51765e4-8b04-409b-9ddb-a18645347cdf
+                    - button "Редагувати" [ref=e195]
+                  - button "Видалити" [ref=e196]
+            - row "e2e-audit-log-058cbd10-1 E2E Audit Log 1 Вимкнено — 100% On Редагувати Видалити" [ref=e197]:
+              - cell "e2e-audit-log-058cbd10-1" [ref=e198]
+              - cell "E2E Audit Log 1" [ref=e199]
+              - cell "Вимкнено" [ref=e200]:
+                - generic [ref=e201]: Вимкнено
+              - cell "—" [ref=e202]
+              - cell "100%" [ref=e203]
+              - cell "On Редагувати Видалити" [ref=e204]:
+                - generic [ref=e205]:
+                  - button "On" [ref=e206]
+                  - link "Редагувати" [ref=e207] [cursor=pointer]:
+                    - /url: /admin/feature-flags/748b2bb6-9058-4486-9235-c116d773823c
+                    - button "Редагувати" [ref=e208]
+                  - button "Видалити" [ref=e209]
+            - row "e2e-audit-log-9ee25387-1 E2E Audit Log 1 Вимкнено — 100% On Редагувати Видалити" [ref=e210]:
+              - cell "e2e-audit-log-9ee25387-1" [ref=e211]
+              - cell "E2E Audit Log 1" [ref=e212]
+              - cell "Вимкнено" [ref=e213]:
+                - generic [ref=e214]: Вимкнено
+              - cell "—" [ref=e215]
+              - cell "100%" [ref=e216]
+              - cell "On Редагувати Видалити" [ref=e217]:
+                - generic [ref=e218]:
+                  - button "On" [ref=e219]
+                  - link "Редагувати" [ref=e220] [cursor=pointer]:
+                    - /url: /admin/feature-flags/1095ff57-ae15-4139-9da6-7cdb8d45cb95
+                    - button "Редагувати" [ref=e221]
+                  - button "Видалити" [ref=e222]
+            - row "e2e-audit-log-1185d57c-3 E2E Audit Log 3 Вимкнено — 100% On Редагувати Видалити" [ref=e223]:
+              - cell "e2e-audit-log-1185d57c-3" [ref=e224]
+              - cell "E2E Audit Log 3" [ref=e225]
+              - cell "Вимкнено" [ref=e226]:
+                - generic [ref=e227]: Вимкнено
+              - cell "—" [ref=e228]
+              - cell "100%" [ref=e229]
+              - cell "On Редагувати Видалити" [ref=e230]:
+                - generic [ref=e231]:
+                  - button "On" [ref=e232]
+                  - link "Редагувати" [ref=e233] [cursor=pointer]:
+                    - /url: /admin/feature-flags/dd42d3eb-b374-4ccc-9bff-693e3770100a
+                    - button "Редагувати" [ref=e234]
+                  - button "Видалити" [ref=e235]
+            - row "e2e-audit-log-058cbd10-2 E2E Audit Log 2 Вимкнено — 100% On Редагувати Видалити" [ref=e236]:
+              - cell "e2e-audit-log-058cbd10-2" [ref=e237]
+              - cell "E2E Audit Log 2" [ref=e238]
+              - cell "Вимкнено" [ref=e239]:
+                - generic [ref=e240]: Вимкнено
+              - cell "—" [ref=e241]
+              - cell "100%" [ref=e242]
+              - cell "On Редагувати Видалити" [ref=e243]:
+                - generic [ref=e244]:
+                  - button "On" [ref=e245]
+                  - link "Редагувати" [ref=e246] [cursor=pointer]:
+                    - /url: /admin/feature-flags/e8053217-1ca1-4e9f-99f2-eb3fc604019b
+                    - button "Редагувати" [ref=e247]
+                  - button "Видалити" [ref=e248]
+            - row "e2e-audit-log-9ee25387-2 E2E Audit Log 2 Вимкнено — 100% On Редагувати Видалити" [ref=e249]:
+              - cell "e2e-audit-log-9ee25387-2" [ref=e250]
+              - cell "E2E Audit Log 2" [ref=e251]
+              - cell "Вимкнено" [ref=e252]:
+                - generic [ref=e253]: Вимкнено
+              - cell "—" [ref=e254]
+              - cell "100%" [ref=e255]
+              - cell "On Редагувати Видалити" [ref=e256]:
+                - generic [ref=e257]:
+                  - button "On" [ref=e258]
+                  - link "Редагувати" [ref=e259] [cursor=pointer]:
+                    - /url: /admin/feature-flags/eea90d29-7324-4a64-8032-469f91f204f0
+                    - button "Редагувати" [ref=e260]
+                  - button "Видалити" [ref=e261]
+            - row "e2e-audit-log-1185d57c-4 E2E Audit Log 4 Вимкнено — 100% On Редагувати Видалити" [ref=e262]:
+              - cell "e2e-audit-log-1185d57c-4" [ref=e263]
+              - cell "E2E Audit Log 4" [ref=e264]
+              - cell "Вимкнено" [ref=e265]:
+                - generic [ref=e266]: Вимкнено
+              - cell "—" [ref=e267]
+              - cell "100%" [ref=e268]
+              - cell "On Редагувати Видалити" [ref=e269]:
+                - generic [ref=e270]:
+                  - button "On" [ref=e271]
+                  - link "Редагувати" [ref=e272] [cursor=pointer]:
+                    - /url: /admin/feature-flags/1a5768ff-cc9e-402f-87ab-ea60675bc101
+                    - button "Редагувати" [ref=e273]
+                  - button "Видалити" [ref=e274]
+            - row "e2e-audit-log-058cbd10-3 E2E Audit Log 3 Вимкнено — 100% On Редагувати Видалити" [ref=e275]:
+              - cell "e2e-audit-log-058cbd10-3" [ref=e276]
+              - cell "E2E Audit Log 3" [ref=e277]
+              - cell "Вимкнено" [ref=e278]:
+                - generic [ref=e279]: Вимкнено
+              - cell "—" [ref=e280]
+              - cell "100%" [ref=e281]
+              - cell "On Редагувати Видалити" [ref=e282]:
+                - generic [ref=e283]:
+                  - button "On" [ref=e284]
+                  - link "Редагувати" [ref=e285] [cursor=pointer]:
+                    - /url: /admin/feature-flags/fdf20ad2-de24-4037-b6cd-082b19577a9a
+                    - button "Редагувати" [ref=e286]
+                  - button "Видалити" [ref=e287]
+        - generic [ref=e288]:
+          - button "Previous" [disabled]
+          - generic [ref=e289]: 1 / 2
+          - button "Next" [ref=e290]
+  - region "Notifications alt+T"
+  - alert [ref=e291]
+```
